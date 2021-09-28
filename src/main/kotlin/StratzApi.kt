@@ -4,7 +4,7 @@ data class StratzPlayer(
     val winCount: Int,
     val matchCount: Int,
     val behaviorScore: Int,
-    val languageCode: List<String>,
+    val languageCode: List<String>?,
 )
 
 data class StratzSteamAccount(

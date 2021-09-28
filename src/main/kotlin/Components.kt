@@ -1,6 +1,5 @@
 import androidx.compose.foundation.BoxWithTooltip
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -10,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -21,6 +19,7 @@ const val playerSteamNameWidth = 350
 const val playerProNameWidth = 175
 const val behaviorWidth = 80
 const val matchCountWidth = 80
+const val languagesWidth = 150
 
 @Composable
 fun applicationInterface(applicationState: ApplicationState) {
@@ -58,7 +57,7 @@ fun applicationInterface(applicationState: ApplicationState) {
             Spacer(modifier = Modifier.size(12.dp))
             Card(
                 modifier = Modifier
-                    .width(1000.dp)
+                    .width(1400.dp)
                     .height(IntrinsicSize.Min)
                     .padding(16.dp),
                 elevation = 6.dp
@@ -83,17 +82,52 @@ fun applicationInterface(applicationState: ApplicationState) {
                                     .height(50.dp)
                                     .padding(8.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Person,
-                                    contentDescription = null,
-                                    tint = Color(0xff1976d2)
-                                )
+                                BoxWithTooltip(
+                                    tooltip = {
+                                        Surface(
+                                            shape = MaterialTheme.shapes.small,
+                                            color = MaterialTheme.colors.secondary
+                                        )
+                                        {
+                                            Text(
+                                                modifier = Modifier.padding(6.dp),
+                                                text = "Profile status\n\n" +
+                                                        "Blue = Not Fetched\n" +
+                                                        "Red = Private\n" +
+                                                        "Green = Public"
+                                            )
+                                        }
+                                    }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Person,
+                                        contentDescription = null,
+                                        tint = Color(0xff1976d2)
+                                    )
+                                }
                                 Spacer(modifier = Modifier.size(16.dp))
-                                Icon(
-                                    imageVector = Icons.Outlined.Warning,
-                                    contentDescription = null,
-                                    tint = Color(0xff000000)
-                                )
+                                BoxWithTooltip(
+                                    tooltip = {
+                                        Surface(
+                                            shape = MaterialTheme.shapes.small,
+                                            color = MaterialTheme.colors.secondary
+                                        )
+                                        {
+                                            Text(
+                                                modifier = Modifier.padding(6.dp),
+                                                text = "Stratz smurf detection\n\n" +
+                                                        "Blue = 1\n" +
+                                                        "Yellow = 2\n" +
+                                                        "Orange = 3\n" +
+                                                        "Red = 4"
+                                            )
+                                        }
+                                    }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Warning,
+                                        contentDescription = null,
+                                        tint = Color(0xff000000)
+                                    )
+                                }
 
                                 Spacer(modifier = Modifier.size(16.dp))
                                 Divider(Modifier.fillMaxHeight().width(1.dp))
@@ -163,6 +197,23 @@ fun applicationInterface(applicationState: ApplicationState) {
                                 Spacer(modifier = Modifier.size(8.dp))
                                 Divider(Modifier.fillMaxHeight().width(1.dp))
                                 Spacer(modifier = Modifier.size(8.dp))
+
+                                // Languages
+                                Column(
+                                    modifier = Modifier
+                                        .width(languagesWidth.dp)
+                                        .height(IntrinsicSize.Min),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "Languages",
+                                        fontSize = 17.sp
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.size(8.dp))
+                                Divider(Modifier.fillMaxHeight().width(1.dp))
+                                Spacer(modifier = Modifier.size(8.dp))
                             }
                         }
 
@@ -207,9 +258,9 @@ fun teamInfo(teamName: String, team: Array<Player>) {
         }
         Divider(Modifier.fillMaxHeight().width(2.dp))
         Column(Modifier.padding(4.dp)) {
-            var teamIterator = team.iterator()
+            val teamIterator = team.iterator()
             while (teamIterator.hasNext()) {
-                var player = teamIterator.next()
+                val player = teamIterator.next()
                 playerInfo(player)
                 if (teamIterator.hasNext()) {
                     Divider(Modifier.fillMaxWidth().width(1.dp))
@@ -249,33 +300,11 @@ fun playerInfo(player: Player) {
             4 -> Color(0xffc62828)
             else -> Color(0x00000000)
         }
-        if (player.smurfFlag.value > 0) {
-            BoxWithTooltip(
-                tooltip = {
-                    Surface(
-                        shape = MaterialTheme.shapes.small,
-                        color = MaterialTheme.colors.secondary
-                    )
-                    {
-                        Text(
-                            modifier = Modifier.padding(6.dp),
-                            text = "${player.smurfFlag.value}"
-                        )
-                    }
-                }) {
-                Icon(
-                    imageVector = Icons.Outlined.Warning,
-                    contentDescription = null,
-                    tint = smurfColor
-                )
-            }
-        } else {
-            Icon(
-                imageVector = Icons.Outlined.Warning,
-                contentDescription = null,
-                tint = smurfColor
-            )
-        }
+        Icon(
+            imageVector = Icons.Outlined.Warning,
+            contentDescription = null,
+            tint = smurfColor
+        )
 
 
         Spacer(modifier = Modifier.size(16.dp))
@@ -343,10 +372,10 @@ fun playerInfo(player: Player) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (player.isAnonymous.value == false) {
-                    Text(
-                        text = "${player.matchCount.value}",
-                        fontSize = 17.sp
-                    )
+                Text(
+                    text = "${player.matchCount.value}",
+                    fontSize = 17.sp
+                )
             }
         }
 
@@ -354,5 +383,40 @@ fun playerInfo(player: Player) {
         Divider(Modifier.fillMaxHeight().width(1.dp))
         Spacer(modifier = Modifier.size(8.dp))
 
+        // Languages
+        Column(
+            modifier = Modifier
+                .width(languagesWidth.dp)
+                .height(40.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row {
+                if ("en" in player.stratzLanguages.value)
+                    Column(modifier = Modifier.padding(8.dp, 0.dp, 8.dp, 0.dp)) {
+                        Image(
+                            painter = painterResource("languages/en.png"),
+                            contentDescription = null
+                        )
+                    }
+                if ("ru" in player.stratzLanguages.value)
+                    Column(modifier = Modifier.padding(8.dp, 0.dp, 8.dp, 0.dp)) {
+                        Image(
+                            painter = painterResource("languages/ru.png"),
+                            contentDescription = null
+                        )
+                    }
+                if ("fr" in player.stratzLanguages.value)
+                    Column(modifier = Modifier.padding(8.dp, 0.dp, 8.dp, 0.dp)) {
+                        Image(
+                            painter = painterResource("languages/fr.png"),
+                            contentDescription = null
+                        )
+                    }
+            }
+        }
+
+        Spacer(modifier = Modifier.size(8.dp))
+        Divider(Modifier.fillMaxHeight().width(1.dp))
+        Spacer(modifier = Modifier.size(8.dp))
     }
 }
