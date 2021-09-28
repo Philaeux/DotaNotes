@@ -85,6 +85,9 @@ class ApplicationState(
                 if (info.steamAccount.proSteamAccount != null) {
                     it.name.value = info.steamAccount.proSteamAccount.name
                 }
+                if (info.languageCode != null) {
+                    it.stratzLanguages.value = info.languageCode.filter { listOf("en", "fr", "ru").contains(it) }.joinToString(" ")
+                }
             }
         }
     }
@@ -105,6 +108,7 @@ class Player(
     var winCount: MutableState<Int> = mutableStateOf(0),
     var behaviorScore: MutableState<Int> = mutableStateOf(0),
     var smurfFlag: MutableState<Int> = mutableStateOf(0),
+    var stratzLanguages: MutableState<String> = mutableStateOf("")
 ) {
     fun setSteamId(newSteamId: Int) {
         if (newSteamId != steamId.value) {
@@ -116,6 +120,7 @@ class Player(
             winCount.value = 0
             behaviorScore.value = 0
             smurfFlag.value = 0
+            stratzLanguages.value = ""
         }
     }
     fun setSteamId(newSteamId: String) {
