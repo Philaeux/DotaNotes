@@ -14,6 +14,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
+import ngo.cluster.dota_notes.ApplicationData
+import ngo.cluster.dota_notes.Player
 
 const val playerSteamNameWidth = 350
 const val playerProNameWidth = 175
@@ -22,7 +24,7 @@ const val matchCountWidth = 80
 const val languagesWidth = 150
 
 @Composable
-fun applicationInterface(applicationState: ApplicationState) {
+fun applicationInterface(applicationData: ApplicationData) {
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -30,12 +32,12 @@ fun applicationInterface(applicationState: ApplicationState) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        if (applicationState.gameId.value != "0") {
+        if (applicationData.gameId.value != "0") {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Game ${applicationState.gameId.value}",
+                    text = "Game ${applicationData.gameId.value}",
                     fontSize = 17.sp,
                     modifier = Modifier
                         .padding(8.dp, 0.dp, 8.dp, 0.dp)
@@ -47,7 +49,7 @@ fun applicationInterface(applicationState: ApplicationState) {
                     onClick =
                     {
                         coroutineScope.launch {
-                            applicationState.updateWithStratz()
+                            applicationData.updateWithStratz()
                         }
                     }
                 ) {
@@ -221,9 +223,9 @@ fun applicationInterface(applicationState: ApplicationState) {
 
                     // Content
                     Divider(Modifier.fillMaxWidth().height(2.dp))
-                    teamInfo("Radiant", applicationState.radiant)
+                    teamInfo("Radiant", applicationData.radiant)
                     Divider(Modifier.fillMaxWidth().height(2.dp))
-                    teamInfo("Dire", applicationState.dire)
+                    teamInfo("Dire", applicationData.dire)
                 }
             }
         } else {

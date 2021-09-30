@@ -1,29 +1,34 @@
+/**
+ * Copyright MIT License
+ * @author Vincent 'Philaeux' Lamotte
+ */
+
+package ngo.cluster.dota_notes
+
+import ngo.cluster.dota_notes.services.GSIGameState
+import ngo.cluster.dota_notes.services.StratzPlayer
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import java.io.File
 import io.ktor.client.*
 import io.ktor.client.engine.jetty.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
+import serverLogJoinRegex
+import serverLogSteamIdRegex
+import steamIdTo32bits
+import java.io.File
 
-val httpClient = HttpClient(Jetty) {
-    install(JsonFeature){
-        serializer = GsonSerializer()
-    }
-}
-
-
-/**
- * Global state of the application
- * @property[gameId] GameId of the game displayed
- * @property[radiant] Details about the radiant players
- * @property[dire] Details about the dire players
- */
-class ApplicationState(
-    var gameId: MutableState<String> = mutableStateOf("0"),
-    val radiant: Array<Player> = arrayOf(Player(), Player(), Player(), Player(), Player()),
+object ApplicationData {
+    var gameId: MutableState<String> = mutableStateOf("0")
+    val radiant: Array<Player> = arrayOf(Player(), Player(), Player(), Player(), Player())
     val dire: Array<Player> = arrayOf(Player(), Player(), Player(), Player(), Player())
-) {
+
+    private val httpClient = HttpClient(Jetty) {
+        install(JsonFeature) {
+            serializer = GsonSerializer()
+        }
+    }
+
     /**
      *
      */
@@ -86,7 +91,8 @@ class ApplicationState(
                     it.name.value = info.steamAccount.proSteamAccount.name
                 }
                 if (info.languageCode != null) {
-                    it.stratzLanguages.value = info.languageCode.filter { listOf("en", "fr", "ru").contains(it) }.joinToString(" ")
+                    it.stratzLanguages.value =
+                        info.languageCode.filter { listOf("en", "fr", "ru").contains(it) }.joinToString(" ")
                 }
             }
         }
@@ -94,10 +100,11 @@ class ApplicationState(
 }
 
 /**
- * A Dota Player
+ * A Dota Player information stored into the ApplicationData
  * @param[steamId] 32bit steam identifier
- * @param[name] Name defined by the user
- * @param[currentName] Current steam name of the player
+ * @param[name] Pro dota name or custom user name
+ * @param[currentName] Current steam name
+ * @param[isAnonymous]
  */
 class Player(
     var steamId: MutableState<Int> = mutableStateOf(0),
@@ -123,6 +130,7 @@ class Player(
             stratzLanguages.value = ""
         }
     }
+
     fun setSteamId(newSteamId: String) {
         setSteamId(newSteamId.toInt())
     }
