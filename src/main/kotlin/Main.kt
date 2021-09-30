@@ -3,7 +3,7 @@
  * @author Vincent 'Philaeux' Lamotte
  */
 
-import dotanotes.DotaNotes
+import ngo.cluster.dota_notes.DotaNotes
 
 /** Entry point of the DotaNotes executable */
 fun main() {
