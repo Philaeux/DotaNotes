@@ -5,18 +5,19 @@
 
 package ngo.cluster.dota_notes
 
-import ngo.cluster.dota_notes.services.GSIGameState
-import ngo.cluster.dota_notes.services.StratzPlayer
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import io.ktor.client.*
 import io.ktor.client.engine.jetty.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
-import ngo.cluster.dota_notes.services.serverLogJoinRegex
-import ngo.cluster.dota_notes.services.serverLogSteamIdRegex
-import ngo.cluster.dota_notes.services.steamIdTo32bits
+import ngo.cluster.dota_notes.ApplicationData.dire
+import ngo.cluster.dota_notes.ApplicationData.gameId
+import ngo.cluster.dota_notes.ApplicationData.httpClient
+import ngo.cluster.dota_notes.ApplicationData.radiant
+import ngo.cluster.dota_notes.services.*
 import java.io.File
+
 
 /**
  * Singleton holding application data
@@ -26,13 +27,21 @@ import java.io.File
  * @property[httpClient] Client used to do Stratz API GET request
  */
 object ApplicationData {
+    var steamPath: MutableState<String> = mutableStateOf("")
     var gameId: MutableState<String> = mutableStateOf("0")
     val radiant: Array<Player> = arrayOf(Player(), Player(), Player(), Player(), Player())
     val dire: Array<Player> = arrayOf(Player(), Player(), Player(), Player(), Player())
-
     private val httpClient = HttpClient(Jetty) {
         install(JsonFeature) {
             serializer = GsonSerializer()
+        }
+    }
+
+    init {
+        val regValue = """reg query HKCU\Software\Valve\Steam /v SteamPath""".runCommand()
+        val keyResult = regValue?.split("\n")?.firstOrNull { it.contains("SteamPath") }
+        if (keyResult != null) {
+            steamPath.value = keyResult.substring(27)
         }
     }
 
@@ -48,16 +57,10 @@ object ApplicationData {
                 .findAll(playerLog)
                 .map { it.value.subSequence(1, it.value.length - 1) }
                 .toList()
-            radiant[0].setSteamId(players[0].toString().substring(4))
-            radiant[1].setSteamId(players[1].toString().substring(4))
-            radiant[2].setSteamId(players[2].toString().substring(4))
-            radiant[3].setSteamId(players[3].toString().substring(4))
-            radiant[4].setSteamId(players[4].toString().substring(4))
-            dire[0].setSteamId(players[5].toString().substring(4))
-            dire[1].setSteamId(players[6].toString().substring(4))
-            dire[2].setSteamId(players[7].toString().substring(4))
-            dire[3].setSteamId(players[8].toString().substring(4))
-            dire[4].setSteamId(players[9].toString().substring(4))
+            for(i in 0..4) {
+                radiant[i].setSteamId(players[i].toString().substring(4))
+                dire[i].setSteamId(players[i+5].toString().substring(4))
+            }
         }
     }
 
@@ -68,19 +71,11 @@ object ApplicationData {
     fun readFromGSI(gsiGameState: GSIGameState) {
         if (gsiGameState.map.matchid != "")
             gameId.value = gsiGameState.map.matchid
-        if (gsiGameState.player.team2 != null) {
-            radiant[0].setSteamId(steamIdTo32bits(gsiGameState.player.team2!!.player0.steamid))
-            radiant[1].setSteamId(steamIdTo32bits(gsiGameState.player.team2!!.player1.steamid))
-            radiant[2].setSteamId(steamIdTo32bits(gsiGameState.player.team2!!.player2.steamid))
-            radiant[3].setSteamId(steamIdTo32bits(gsiGameState.player.team2!!.player3.steamid))
-            radiant[4].setSteamId(steamIdTo32bits(gsiGameState.player.team2!!.player4.steamid))
-        }
-        if (gsiGameState.player.team3 != null) {
-            dire[0].setSteamId(steamIdTo32bits(gsiGameState.player.team3!!.player5.steamid))
-            dire[1].setSteamId(steamIdTo32bits(gsiGameState.player.team3!!.player6.steamid))
-            dire[2].setSteamId(steamIdTo32bits(gsiGameState.player.team3!!.player7.steamid))
-            dire[3].setSteamId(steamIdTo32bits(gsiGameState.player.team3!!.player8.steamid))
-            dire[4].setSteamId(steamIdTo32bits(gsiGameState.player.team3!!.player9.steamid))
+        if (gsiGameState.player.team2 != null && gsiGameState.player.team3 != null) {
+            for (i in 0..4) {
+                radiant[i].setSteamId(steamIdTo32bits(gsiGameState.player.team2!!.getPlayer(i).steamid))
+                dire[i].setSteamId(steamIdTo32bits(gsiGameState.player.team3!!.getPlayer(i+5).steamid))
+            }
         }
     }
 
