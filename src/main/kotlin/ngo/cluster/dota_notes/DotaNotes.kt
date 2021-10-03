@@ -11,7 +11,7 @@ import androidx.compose.material.lightColors
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import applicationInterface
+import ngo.cluster.dota_notes.ui.applicationInterface
 import ngo.cluster.dota_notes.services.HttpServer
 
 /**

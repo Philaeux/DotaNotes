@@ -13,11 +13,18 @@ import io.ktor.client.*
 import io.ktor.client.engine.jetty.*
 import io.ktor.client.features.json.*
 import io.ktor.client.request.*
-import serverLogJoinRegex
-import serverLogSteamIdRegex
-import steamIdTo32bits
+import ngo.cluster.dota_notes.services.serverLogJoinRegex
+import ngo.cluster.dota_notes.services.serverLogSteamIdRegex
+import ngo.cluster.dota_notes.services.steamIdTo32bits
 import java.io.File
 
+/**
+ * Singleton holding application data
+ * @property[gameId] Current game Identifier
+ * @property[radiant] Data about the Radiant players
+ * @property[dire] Data about the Dire players
+ * @property[httpClient] Client used to do Stratz API GET request
+ */
 object ApplicationData {
     var gameId: MutableState<String> = mutableStateOf("0")
     val radiant: Array<Player> = arrayOf(Player(), Player(), Player(), Player(), Player())
@@ -30,7 +37,8 @@ object ApplicationData {
     }
 
     /**
-     *
+     * Update application data using local server_log file
+     * @param[logFile] File to read log from
      */
     fun readFromLog(logFile: File) {
         val log = logFile.readLines()
@@ -54,7 +62,8 @@ object ApplicationData {
     }
 
     /**
-     *
+     * Update application data using game state integration packet
+     * @param[gsiGameState] GSI JSON received on the http Server
      */
     fun readFromGSI(gsiGameState: GSIGameState) {
         if (gsiGameState.map.matchid != "")
@@ -75,6 +84,8 @@ object ApplicationData {
         }
     }
 
+    /** Update players data using Stratz API */
+    // TODO: secure API call
     suspend fun updateWithStratz() {
         (radiant + dire).forEach {
             if (it.steamId.value != 0) {
@@ -117,6 +128,10 @@ class Player(
     var smurfFlag: MutableState<Int> = mutableStateOf(0),
     var stratzLanguages: MutableState<String> = mutableStateOf("")
 ) {
+    /**
+     * Update the SteamID of a player, reset all related information
+     * @param[newSteamId] New player steamId
+     */
     fun setSteamId(newSteamId: Int) {
         if (newSteamId != steamId.value) {
             steamId.value = newSteamId
@@ -131,6 +146,10 @@ class Player(
         }
     }
 
+    /**
+     * Update the SteamID of a player, reset all related information
+     * @param[newSteamId] New player steamId
+     */
     fun setSteamId(newSteamId: String) {
         setSteamId(newSteamId.toInt())
     }
