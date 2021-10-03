@@ -14,7 +14,7 @@ import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import ngo.cluster.dota_notes.ApplicationData
-import serverLogFile
+import ngo.cluster.dota_notes.services.serverLogFile
 
 /**
  * Singleton Http Server receiving GSI updates

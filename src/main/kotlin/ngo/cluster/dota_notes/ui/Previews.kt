@@ -1,3 +1,10 @@
+/**
+ * Copyright MIT License
+ * @author Vincent 'Philaeux' Lamotte
+ */
+
+package ngo.cluster.dota_notes.ui
+
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.runtime.Composable
 import ngo.cluster.dota_notes.ApplicationData
