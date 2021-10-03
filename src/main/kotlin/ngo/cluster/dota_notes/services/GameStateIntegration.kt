@@ -72,8 +72,18 @@ data class GSIPlayersRadiant(
     var player1: GSIPlayerInfo = GSIPlayerInfo(),
     var player2: GSIPlayerInfo = GSIPlayerInfo(),
     var player3: GSIPlayerInfo = GSIPlayerInfo(),
-    var player4: GSIPlayerInfo = GSIPlayerInfo(),
-)
+    var player4: GSIPlayerInfo = GSIPlayerInfo()
+) {
+    fun getPlayer(i: Int): GSIPlayerInfo {
+        return when (i) {
+            0 -> player0
+            1 -> player1
+            2 -> player2
+            3 -> player3
+            else -> player4
+        }
+    }
+}
 
 /**
  * Dire team composition
@@ -89,7 +99,17 @@ data class GSIPlayersDire(
     var player7: GSIPlayerInfo = GSIPlayerInfo(),
     var player8: GSIPlayerInfo = GSIPlayerInfo(),
     var player9: GSIPlayerInfo = GSIPlayerInfo(),
-)
+) {
+    fun getPlayer(i: Int): GSIPlayerInfo {
+        return when (i) {
+            5 -> player5
+            6 -> player6
+            7 -> player7
+            8 -> player8
+            else -> player9
+        }
+    }
+}
 
 /**
  * A player in a team
