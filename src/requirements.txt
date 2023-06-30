@@ -1,0 +1,5 @@
+steam
+dota2
+Flask
+sqlalchemy
+pyside6
