@@ -1,5 +1,5 @@
 steam
-dota2
+../../dota2
 Flask
 sqlalchemy
 pyside6

@@ -1,5 +1,6 @@
 .idea
+__pycache__
 
-src/.wenv/
+src/.wvenv/
 src/.venv/
 src/d2notes/sqlite.db

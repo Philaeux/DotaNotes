@@ -24,6 +24,7 @@ class Database:
             session.add(Setting("version", "1"))
             session.add(Setting("steam_user", ""))
             session.add(Setting("steam_password", ""))
+            session.add(Setting("steam_api_key", ""))
             session.commit()
 
 

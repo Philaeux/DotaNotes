@@ -1,56 +1,44 @@
 import multiprocessing
 import sys
-from queue import Empty
 
-from PySide6 import QtCore
-from PySide6.QtCore import QObject, Signal
-
-from d2notes.database import Database, Setting
-from d2notes.flask_app import flask_process
-from d2notes.steam_app import steam_process
-from d2notes.qt_app import QtApp
+from d2notes.data.application_state import ApplicationState
+from d2notes.data.database import Database, Setting
+from d2notes.app_flask import flask_process
+from d2notes.app_dota import dota_process
+from d2notes.ui.app_qt import QtApp
 
 
 class D2Notes:
     def __init__(self):
-        self.data = D2NotesData()
+        self.state = ApplicationState()
+
         self.match_id_from_gsi = multiprocessing.Queue()
-        self.match_id_to_dota = multiprocessing.Queue()
+        self.user_steam_id_to_dota = multiprocessing.Queue()
+        self.server_id_from_dota = multiprocessing.Queue()
         self.database = Database()
-        self.qt_app = QtApp(self)
+        self.app_qt = QtApp(self)
+
+        self.steam_api_key = ""
 
     def run(self):
-        # Create all services
+        # Web Server
+        app_flask = multiprocessing.Process(target=flask_process, args=(58765, self.match_id_from_gsi,))
+        app_flask.start()
 
-        # Start all services
-        flask_app = multiprocessing.Process(target=flask_process, args=(self.match_id_from_gsi,))
-        flask_app.start()
+        # Dota client
         steam_username = self.database.sessions().query(Setting).filter_by(key="steam_user").one_or_none()
         steam_password = self.database.sessions().query(Setting).filter_by(key="steam_password").one_or_none()
-        steam_app = multiprocessing.Process(target=steam_process, args=(steam_username.value, steam_password.value, self.match_id_to_dota,))
-        steam_app.start()
+        self.steam_api_key = self.database.sessions().query(Setting).filter_by(key="steam_api_key").one_or_none().value
+        app_dota = multiprocessing.Process(
+            target=dota_process,
+            args=(steam_username.value, steam_password.value, self.user_steam_id_to_dota, self.server_id_from_dota,)
+        )
+        app_dota.start()
 
-        timer = QtCore.QTimer()
-        timer.timeout.connect(self.process_queues)
-        timer.start(100)
+        # Qt App
+        return_code = self.app_qt.app.exec_()
 
-        self.qt_app.app.exec_()
-        timer.stop()
-        flask_app.kill()
-        steam_app.kill()
-
-    def process_queues(self):
-        while not self.match_id_from_gsi.empty():
-            match_id = self.match_id_from_gsi.get(block=False)
-            if self.data.match_id != match_id:
-                self.data.match_id = match_id
-                self.qt_app.new_match_id()
-                self.match_id_to_dota.put(match_id)
-                print(match_id)
-
-
-class D2NotesData(QObject):
-    match_id = 0
-
-    def __init__(self):
-        super().__init__()
+        # Clean
+        app_flask.kill()
+        app_dota.kill()
+        sys.exit(return_code)
