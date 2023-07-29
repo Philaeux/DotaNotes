@@ -3,4 +3,4 @@ __pycache__
 
 src/.wvenv/
 src/.venv/
-src/d2notes/sqlite.db
+src/d2notes/data/sqlite.db

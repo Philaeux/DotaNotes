@@ -7,6 +7,8 @@ from d2notes.app_flask import flask_process
 from d2notes.app_dota import dota_process
 from d2notes.ui.app_qt import QtApp
 
+from sqlalchemy.orm import Session
+
 
 class D2Notes:
     def __init__(self):
@@ -26,12 +28,23 @@ class D2Notes:
         app_flask.start()
 
         # Dota client
-        steam_username = self.database.sessions().query(Setting).filter_by(key="steam_user").one_or_none()
-        steam_password = self.database.sessions().query(Setting).filter_by(key="steam_password").one_or_none()
-        self.steam_api_key = self.database.sessions().query(Setting).filter_by(key="steam_api_key").one_or_none().value
+        steam_username = ""
+        steam_password = ""
+        self.steam_api_key = ""
+        with Session(self.database.engine) as session:
+            row = session.get(Setting, "steam_user")
+            if row is not None:
+                steam_username = row.value
+            row = session.get(Setting, "steam_password")
+            if row is not None:
+                steam_password = row.value
+            row = session.get(Setting, "steam_api_key")
+            if row is not None:
+                self.steam_api_key = row.value
+
         app_dota = multiprocessing.Process(
             target=dota_process,
-            args=(steam_username.value, steam_password.value, self.user_steam_id_to_dota, self.server_id_from_dota,)
+            args=(steam_username, steam_password, self.user_steam_id_to_dota, self.server_id_from_dota,)
         )
         app_dota.start()
 

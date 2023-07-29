@@ -5,6 +5,7 @@ from PySide6.QtCore import Qt, Signal, QTimer
 from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QApplication, QFrame, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QGridLayout, QLineEdit, QPushButton
 
+from sqlalchemy.orm import Session
 from d2notes.data.database import Setting
 from d2notes.helpers import get_game_live_stats
 
@@ -51,7 +52,8 @@ class QtApp:
         central_layout.addLayout(first_page_layout)
         central_layout.addWidget(divider)
 
-        # Steam ID Selector
+        # First Page Left Side
+        # -Steam ID Selector
         first_line = QWidget()
         first_line_layout = QHBoxLayout()
         first_line.setLayout(first_line_layout)
@@ -61,10 +63,11 @@ class QtApp:
         first_line_layout.addWidget(bububu_button)
         grubby_button = QPushButton("Grubby")
         first_line_layout.addWidget(grubby_button)
-        last_search = self.d2notes.database.sessions().query(Setting).filter_by(key="last_search").one_or_none()
         last_search_string = ""
-        if last_search is not None:
-            last_search_string = last_search.value
+        with Session(self.d2notes.database.engine) as session:
+            last_search = session.get(Setting, "last_search")
+            if last_search is not None:
+                last_search_string = last_search.value
         self.steam_id_line = QLineEdit(last_search_string)
         phil_button.clicked.connect(lambda: self.steam_id_line.setText("76561197961298382"))
         bububu_button.clicked.connect(lambda: self.steam_id_line.setText("76561198066647717"))
@@ -75,7 +78,7 @@ class QtApp:
         first_line_layout.addWidget(steam_compute_button)
         first_page_left_layout.addWidget(first_line)
 
-        # Match header display
+        # -Match header display
         divider = QFrame()
         divider.setFrameShape(QFrame.Shape.HLine)
         divider.setFrameShadow(QFrame.Shadow.Sunken)
@@ -101,14 +104,14 @@ class QtApp:
         divider.setMidLineWidth(1)
         first_page_left_layout.addWidget(divider)
 
-        # Player list display
+        # -Player list display
         table_layout = QGridLayout()
         table_layout.setHorizontalSpacing(0)
         table_layout.setVerticalSpacing(0)
         column_width = [150, 150, 150, 150, 150, 150]
         headers = ["In-Game Name", "Pro Name", "Custom Name", "Games", "Languages", "Warnings"]
 
-        # -Header
+        # --Header
         for col in range(len(column_width)):
             cell = QLabel(headers[col])
             cell.setAlignment(Qt.AlignCenter)
@@ -119,7 +122,7 @@ class QtApp:
         divider.setFrameShadow(QFrame.Shadow.Sunken)
         table_layout.addWidget(divider, 1, 0, 1, len(headers))
 
-        # -Content
+        # --Content
         self.match_player_labels = []
         for teams in range(2):
             for player in range(5):
@@ -139,6 +142,10 @@ class QtApp:
                 divider.setFrameShadow(QFrame.Shadow.Sunken)
                 table_layout.addWidget(divider, 6*teams+7, 0, 1, len(headers))
         first_page_left_layout.addLayout(table_layout)
+
+        # First Page right side
+        test = QLabel("test")
+        first_page_right_layout.addWidget(test)
 
         # Show main window
         self.window.setCentralWidget(central_widget)
