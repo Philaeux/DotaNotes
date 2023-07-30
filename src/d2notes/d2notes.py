@@ -1,3 +1,4 @@
+import logging
 import multiprocessing
 import sys
 
@@ -49,7 +50,7 @@ class D2Notes:
         app_dota.start()
 
         # Qt App
-        return_code = self.app_qt.app.exec_()
+        return_code = self.app_qt.run()
 
         # Clean
         app_flask.kill()

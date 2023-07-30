@@ -10,7 +10,6 @@ logging.basicConfig(format='[%(asctime)s] %(levelname)s %(name)s: %(message)s', 
 
 
 def dota_process(username, password, match_id_in_queue, server_id_out_queue):
-    print(password)
     app = DotaApp(username, password, match_id_in_queue, server_id_out_queue)
     app.run()
 
@@ -35,7 +34,6 @@ class DotaApp:
         self.dota.on(EDOTAGCMsg.EMsgGCSpectateFriendGameResponse, self.on_spectate_response)
 
     def start_dota(self):
-        print("logged on")
         self.dota.launch()
 
     def do_dota_stuff(self):

@@ -7,12 +7,15 @@ win-install:
 	"$(get-location)" > .\.wvenv\Lib\site-packages\bot.pth
 
 ## Run the development files
-win-run:
+win-run: win-genui
 	.\.wvenv\Scripts\python.exe .\main.py
 
 ## Remove development environment
 win-clean:
 	rm -r .wvenv
+
+win-genui: ./d2notes/ui/main_window.ui
+	.\.wvenv\Scripts\pyside6-uic.exe ./d2notes/ui/main_window.ui -o ./d2notes/ui/main_window.py
 
 ## Generate a production build
 win-build:
