@@ -1,8 +1,8 @@
 from PySide6.QtCore import QObject
 
 
-class Player(QObject):
+class PlayerState(QObject):
     steam_id = 0
     name = ""
-    pro_name = ""
-    custom_name = ""
+    pro_name = None
+    custom_name = None

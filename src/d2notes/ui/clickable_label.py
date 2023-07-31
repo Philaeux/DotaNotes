@@ -3,11 +3,10 @@ from PySide6.QtWidgets import QLabel
 
 
 class ClickableLabel(QLabel):
-    clicked = Signal(int)
+    clicked = Signal(str, str)
 
-    def __init__(self, row, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.row = row
 
     def mousePressEvent(self, event):
-        self.clicked.emit(self.row)
+        self.clicked.emit(self.objectName(), self.text())

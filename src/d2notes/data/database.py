@@ -1,6 +1,7 @@
 import os
 import sys
 from select import select
+from typing import Optional
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, DeclarativeBase, mapped_column, Mapped
@@ -47,12 +48,18 @@ class Setting(Base):
 
 
 class Player(Base):
-    __tablename__ = 'player'
+    __tablename__ = 'players'
 
     steam_id: Mapped[str] = mapped_column(primary_key=True)
-    last_seen_name: Mapped[str] = mapped_column()
-    pro_name: Mapped[str] = mapped_column()
-    custom_name: Mapped[str] = mapped_column()
+    name: Mapped[str] = mapped_column()
+    pro_name: Mapped[Optional[str]] = mapped_column()
+    custom_name: Mapped[Optional[str]] = mapped_column()
+
+    def __init__(self, steam_id, name, pro_name=None, custom_name=None):
+        self.steam_id = steam_id
+        self.name = name
+        self.pro_name = pro_name
+        self.custom_name = custom_name
 
     def __repr__(self) -> str:
         return f"Player(steam_id{self.steam_id!r}, last_seen_name={self.last_seen_name!r}, pro_name={self.pro_name!r}, custom_name={self.custom_name!r})"

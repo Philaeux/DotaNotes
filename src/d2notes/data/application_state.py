@@ -1,14 +1,14 @@
 from PySide6.QtCore import QObject
 
-from d2notes.data.player_state import Player
+from d2notes.data.player_state import PlayerState
 
 
 class ApplicationState(QObject):
     match_id = 0
     server_id = 0
     players = [
-        Player(), Player(), Player(), Player(), Player(),
-        Player(), Player(), Player(), Player(), Player(),
+        PlayerState(), PlayerState(), PlayerState(), PlayerState(), PlayerState(),
+        PlayerState(), PlayerState(), PlayerState(), PlayerState(), PlayerState(),
     ]
 
     def __init__(self):

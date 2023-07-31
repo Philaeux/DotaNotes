@@ -14,8 +14,8 @@ win-run: win-genui
 win-clean:
 	rm -r .wvenv
 
-win-genui: ./d2notes/ui/main_window.ui
-	.\.wvenv\Scripts\pyside6-uic.exe ./d2notes/ui/main_window.ui -o ./d2notes/ui/main_window.py
+win-genui:
+	.\.wvenv\Scripts\pyside6-uic.exe ./d2notes/ui/ui_main_window.ui -o ./d2notes/ui/ui_main_window.py
 
 ## Generate a production build
 win-build:

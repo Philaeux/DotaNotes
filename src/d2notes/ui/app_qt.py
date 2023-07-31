@@ -2,14 +2,12 @@ import sys
 from datetime import datetime
 
 from PySide6.QtCore import QTimer
-from PySide6.QtWidgets import QApplication, QMainWindow
-
+from PySide6.QtWidgets import QApplication
 
 from sqlalchemy.orm import Session
-from d2notes.data.database import Setting
+from d2notes.data.database import Setting, Player
 from d2notes.helpers import get_game_live_stats
-
-from d2notes.ui.main_window import Ui_MainWindow
+from d2notes.ui.main_window import MainWindow
 
 
 class QtApp:
@@ -19,6 +17,7 @@ class QtApp:
         # Build App
         self.app = QApplication(sys.argv)
         self.window = MainWindow()
+        self.lastIndexSelected = 0
 
         # Connect actions
         self.window.actionSettings.triggered.connect(lambda: print("TODO"))
@@ -26,7 +25,10 @@ class QtApp:
         self.window.buttonPhilaeux.clicked.connect(lambda: self.window.inputSteamId.setText("76561197961298382"))
         self.window.buttonBububu.clicked.connect(lambda: self.window.inputSteamId.setText("76561198066647717"))
         self.window.buttonGrubby.clicked.connect(lambda: self.window.inputSteamId.setText("76561198809738927"))
-        self.window.buttonSearch.clicked.connect(self.search_user_game)
+        self.window.buttonSearch.clicked.connect(self.on_search_game)
+        self.window.buttonDetailsSave.clicked.connect(self.save_player_details)
+        for i in range(10):
+            getattr(self.window, f"labelPlayer{i}Name").clicked.connect(self.on_label_click)
 
         with Session(self.d2notes.database.engine) as session:
             last_search = session.get(Setting, "last_search")
@@ -35,70 +37,6 @@ class QtApp:
 
         self.status_message("Ready")
 
-        #
-        # # -Player list display
-        # table_layout = QGridLayout()
-        # table_layout.setHorizontalSpacing(0)
-        # table_layout.setVerticalSpacing(0)
-        # column_width = [160, 160, 160, 160, 160, 160]
-        # headers = ["In-Game Name", "Pro Name", "Custom Name", "Games", "Languages", "Warnings"]
-        #
-        # # --Header
-        # for col in range(len(column_width)):
-        #     cell = QLabel(headers[col])
-        #     cell.setAlignment(Qt.AlignCenter)
-        #     cell.setFixedSize(column_width[col], 60)
-        #     table_layout.addWidget(cell, 0, col)
-        # divider = QFrame()
-        # divider.setFrameShape(QFrame.Shape.HLine)
-        # divider.setFrameShadow(QFrame.Shadow.Sunken)
-        # table_layout.addWidget(divider, 1, 0, 1, len(headers))
-        #
-        # # --Content
-        # self.match_player_labels = []
-        # for teams in range(2):
-        #     for player in range(5):
-        #         labels = []
-        #         for col in range(len(column_width)):
-        #             cell = ClickableLabel(teams * 5 + player, "")
-        #             cell.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-        #             cell.clicked.connect(self.select_row)
-        #             cell.setFixedSize(column_width[col], 60)
-        #             table_layout.addWidget(cell, teams*6+player+2, col)
-        #             labels.append(cell)
-        #         self.match_player_labels.append(labels)
-        #
-        #     if teams == 0:
-        #         divider = QFrame()
-        #         divider.setFrameShape(QFrame.Shape.HLine)
-        #         divider.setFrameShadow(QFrame.Shadow.Sunken)
-        #         table_layout.addWidget(divider, 6*teams+7, 0, 1, len(headers))
-        # first_page_left_layout.addLayout(table_layout)
-        #
-        # # First Page right side
-        # line_layout = QHBoxLayout()
-        # title = QLabel("Steam ID")
-        # title.setFixedSize(160, 60)
-        # title.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        # line_layout.addWidget(title)
-        # self.details_steam_id = QLabel("")
-        # title.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-        # line_layout.addWidget(self.details_steam_id)
-        # first_page_right_layout.addLayout(line_layout)
-        #
-        # line_layout = QHBoxLayout()
-        # title = QLabel("Name")
-        # title.setFixedSize(160, 60)
-        # title.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        # line_layout.addWidget(title)
-        # self.details_name = QLabel("")
-        # title.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-        # line_layout.addWidget(self.details_name)
-        # first_page_right_layout.addLayout(line_layout)
-        #
-        # # Show main window
-        # self.window.setCentralWidget(central_widget)
-        # self.window.setGeometry(0, 0, 600, 400)
         self.window.show()
 
     def status_message(self, message, timeout=0):
@@ -118,7 +56,7 @@ class QtApp:
             if self.d2notes.state.match_id != match_id and match_id != 0:
                 self.d2notes.state.match_id = match_id
                 self.status_message("Detected match id " + self.d2notes.state.match_id + " from GSI.")
-                self.update_match_ui(self.d2notes.state)
+                self.update_match_with_state(self.d2notes.state)
         while not self.d2notes.server_id_from_dota.empty():
             server_id = self.d2notes.server_id_from_dota.get(block=False)
             if server_id != 0:
@@ -126,30 +64,48 @@ class QtApp:
                 game_json = get_game_live_stats(self.d2notes.steam_api_key, self.d2notes.state.server_id)
                 self.d2notes.state.update_with_json(game_json)
                 self.status_message("Found game info for player " + self.window.inputSteamId.text() + " using WEBAPI.")
-                self.update_match_ui(self.d2notes.state)
+                self.update_match_with_state(self.d2notes.state)
+                self.update_details_with_player(0)
             else:
                 self.status_message("No game found for player " + self.window.inputSteamId.text())
 
-    def open_settings(self):
+    def on_open_settings(self):
         pass
 
-    def select_row(self, row):
-        self.details_steam_id.setText(str(self.d2notes.state.players[row].steam_id))
-        self.details_name.setText(self.d2notes.state.players[row].name)
-        print(row)
+    def on_label_click(self, label_name, label_text):
+        row = 0
+        for char in label_name:
+            if char.isdigit():
+                row = int(char)
+        self.lastIndexSelected = row
+        self.update_details_with_player(row)
 
-    def update_match_ui(self, data):
+    def update_details_with_player(self, player_slot):
+        player_state = self.d2notes.state.players[player_slot]
+        self.window.labelDetailsSteamId.setText(str(player_state.steam_id))
+        self.window.labelDetailsName.setText(player_state.name)
+        self.window.labelDetailsProName.setText(
+            player_state.pro_name if player_state.pro_name is not None else "")
+        self.window.inputDetailsCustomName.setText(
+            player_state.custom_name if player_state.custom_name is not None else "")
+
+    def update_match_with_state(self, data):
         self.window.labelMatchId.setText(str(data.match_id))
         self.window.labelServerId.setText(str(data.server_id))
         for index, player in enumerate(data.players):
-            if index > 0:
-                return
-            getattr(self.window, f"labelPlayer{index}Name").setText(player.name)
-            getattr(self.window, f"labelPlayer{index}ProName").setText(player.pro_name)
-            getattr(self.window, f"labelPlayer{index}CustomName").setText(player.custom_name)
-            getattr(self.window, f"labelPlayer{index}GameCount").setText("")
+            if index > 9:
+                break
+            self.update_match_with_player(index, player)
 
-    def search_user_game(self):
+    def update_match_with_player(self, player_slot, player_data):
+        getattr(self.window, f"labelPlayer{player_slot}Name").setText(player_data.name)
+        getattr(self.window, f"labelPlayer{player_slot}ProName").setText(
+            player_data.pro_name if player_data.pro_name is not None else "")
+        getattr(self.window, f"labelPlayer{player_slot}CustomName").setText(
+            player_data.custom_name if player_data.custom_name is not None else "")
+        getattr(self.window, f"labelPlayer{player_slot}GameCount").setText("")
+
+    def on_search_game(self):
         if self.window.inputSteamId.text() != "":
             self.d2notes.user_steam_id_to_dota.put(self.window.inputSteamId.text())
             with Session(self.d2notes.database.engine) as session:
@@ -161,9 +117,26 @@ class QtApp:
                     session.add(last_search)
                 session.commit()
 
-
-class MainWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setupUi(self)
+    def save_player_details(self):
+        player_state = self.d2notes.state.players[self.lastIndexSelected]
+        player_state.pro_name = \
+            self.window.labelDetailsProName.text() if self.window.labelDetailsProName != "" else None
+        player_state.custom_name = \
+            self.window.inputDetailsCustomName.text() if self.window.inputDetailsCustomName.text() != "" else None
+        self.update_match_with_player(self.lastIndexSelected, player_state)
+        with Session(self.d2notes.database.engine) as session:
+            player_info = session.get(Player, str(player_state.steam_id))
+            if player_info is None:
+                player_info = Player(
+                    str(player_state.steam_id),
+                    player_state.name,
+                    player_state.pro_name if player_state.pro_name != "" else None,
+                    player_state.custom_name if player_state.custom_name != "" else None
+                )
+                session.add(player_info)
+            else:
+                player_info.name = player_state.name
+                player_info.pro_name = player_state.pro_name
+                player_info.custom_name = player_state.custom_name
+            session.commit()
 
