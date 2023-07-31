@@ -4,3 +4,6 @@ __pycache__
 src/.wvenv/
 src/.venv/
 src/d2notes/data/sqlite.db
+
+src/d2notes/ui/resources_rc.py
+src/d2notes/ui/ui_main_window.py

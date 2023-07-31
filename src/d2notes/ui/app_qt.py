@@ -55,17 +55,18 @@ class QtApp:
             match_id = self.d2notes.match_id_from_gsi.get(block=False)
             if self.d2notes.state.match_id != match_id and match_id != 0:
                 self.d2notes.state.match_id = match_id
-                self.status_message("Detected match id " + self.d2notes.state.match_id + " from GSI.")
-                self.update_match_with_state(self.d2notes.state)
+                self.status_message(f"Detected match id {self.d2notes.state.match_id!s} from GSI.")
+                self.draw_match_with_state(self.d2notes.state)
         while not self.d2notes.server_id_from_dota.empty():
             server_id = self.d2notes.server_id_from_dota.get(block=False)
             if server_id != 0:
                 self.d2notes.state.server_id = server_id
                 game_json = get_game_live_stats(self.d2notes.steam_api_key, self.d2notes.state.server_id)
-                self.d2notes.state.update_with_json(game_json)
+                self.update_state_with_json(self.d2notes.state, game_json)
+                self.update_state_with_database(self.d2notes.state)
                 self.status_message("Found game info for player " + self.window.inputSteamId.text() + " using WEBAPI.")
-                self.update_match_with_state(self.d2notes.state)
-                self.update_details_with_player(0)
+                self.draw_match_with_state(self.d2notes.state)
+                self.draw_details_with_player(0)
             else:
                 self.status_message("No game found for player " + self.window.inputSteamId.text())
 
@@ -78,32 +79,39 @@ class QtApp:
             if char.isdigit():
                 row = int(char)
         self.lastIndexSelected = row
-        self.update_details_with_player(row)
+        self.draw_details_with_player(row)
 
-    def update_details_with_player(self, player_slot):
+    def draw_details_with_player(self, player_slot):
         player_state = self.d2notes.state.players[player_slot]
         self.window.labelDetailsSteamId.setText(str(player_state.steam_id))
         self.window.labelDetailsName.setText(player_state.name)
         self.window.labelDetailsProName.setText(
             player_state.pro_name if player_state.pro_name is not None else "")
-        self.window.inputDetailsCustomName.setText(
-            player_state.custom_name if player_state.custom_name is not None else "")
+        self.window.inputDetailsCustomName.setText(player_state.custom_name)
+        self.window.comboBoxDetailsSmurf.setCurrentText(player_state.smurf)
+        self.window.checkBoxDetailsRacist.setChecked(player_state.is_racist)
+        self.window.checkBoxDetailsSexist.setChecked(player_state.is_sexist)
+        self.window.checkBoxDetailsToxic.setChecked(player_state.is_toxic)
+        self.window.checkBoxDetailsFeeder.setChecked(player_state.is_feeder)
+        self.window.checkBoxDetailsGivesUp.setChecked(player_state.gives_up)
+        self.window.checkBoxDetailsDestroysItems.setChecked(player_state.destroys_items)
+        self.window.inputDetailsNote.setPlainText(player_state.note)
 
-    def update_match_with_state(self, data):
+    def draw_match_with_state(self, data):
         self.window.labelMatchId.setText(str(data.match_id))
         self.window.labelServerId.setText(str(data.server_id))
         for index, player in enumerate(data.players):
             if index > 9:
                 break
-            self.update_match_with_player(index, player)
+            self.draw_match_player(index, player)
 
-    def update_match_with_player(self, player_slot, player_data):
+    def draw_match_player(self, player_slot, player_data):
         getattr(self.window, f"labelPlayer{player_slot}Name").setText(player_data.name)
         getattr(self.window, f"labelPlayer{player_slot}ProName").setText(
             player_data.pro_name if player_data.pro_name is not None else "")
         getattr(self.window, f"labelPlayer{player_slot}CustomName").setText(
             player_data.custom_name if player_data.custom_name is not None else "")
-        getattr(self.window, f"labelPlayer{player_slot}GameCount").setText("")
+        getattr(self.window, f"labelPlayer{player_slot}Smurf").setText(player_data.smurf)
 
     def on_search_game(self):
         if self.window.inputSteamId.text() != "":
@@ -117,26 +125,58 @@ class QtApp:
                     session.add(last_search)
                 session.commit()
 
+    def update_state_with_json(self, state, json):
+        if "match" in json:
+            if "server_steam_id" in json["match"]:
+                state.server_id = int(json["match"]["server_steam_id"])
+            if "match_id" in json["match"]:
+                state.match_id = int(json["match"]["match_id"])
+        if "teams" in json and isinstance(json["teams"], list):
+            old_player_state = {}
+            for player in state.players:
+                old_player_state[player.steam_id] = player
+            state.fresh_players()
+            for team in json["teams"]:
+                if "players" in team and isinstance(team["players"], list):
+                    for player in team["players"]:
+                        if "playerid" in player:
+                            if "accountid" in player:
+                                state.players[player["playerid"]].steam_id = player["accountid"]
+                                if player["accountid"] in old_player_state:
+                                    state.players[player["playerid"]].pro_name = old_player_state[player["accountid"]].pro_name
+                                    state.players[player["playerid"]].custom_name = old_player_state[player["accountid"]].custom_name
+                            if "name" in player:
+                                state.players[player["playerid"]].name = player["name"]
+
+    def update_state_with_database(self, state):
+        with Session(self.d2notes.database.engine) as session:
+            for player in state.players:
+                if player.steam_id == 0:
+                    continue
+                player_db = session.get(Player, str(player.steam_id))
+                if player_db is not None:
+                    Player.import_export(player_db, player)
+
     def save_player_details(self):
         player_state = self.d2notes.state.players[self.lastIndexSelected]
         player_state.pro_name = \
             self.window.labelDetailsProName.text() if self.window.labelDetailsProName != "" else None
-        player_state.custom_name = \
-            self.window.inputDetailsCustomName.text() if self.window.inputDetailsCustomName.text() != "" else None
-        self.update_match_with_player(self.lastIndexSelected, player_state)
+        player_state.custom_name = self.window.inputDetailsCustomName.text()
+        player_state.smurf = self.window.comboBoxDetailsSmurf.currentText()
+        player_state.is_racist = self.window.checkBoxDetailsRacist.isChecked()
+        player_state.is_sexist = self.window.checkBoxDetailsSexist.isChecked()
+        player_state.is_toxic = self.window.checkBoxDetailsToxic.isChecked()
+        player_state.is_feeder = self.window.checkBoxDetailsFeeder.isChecked()
+        player_state.gives_up = self.window.checkBoxDetailsGivesUp.isChecked()
+        player_state.destroys_items = self.window.checkBoxDetailsDestroysItems.isChecked()
+        player_state.note = self.window.inputDetailsNote.toPlainText()
+        self.draw_match_player(self.lastIndexSelected, player_state)
         with Session(self.d2notes.database.engine) as session:
             player_info = session.get(Player, str(player_state.steam_id))
             if player_info is None:
-                player_info = Player(
-                    str(player_state.steam_id),
-                    player_state.name,
-                    player_state.pro_name if player_state.pro_name != "" else None,
-                    player_state.custom_name if player_state.custom_name != "" else None
-                )
+                player_info = Player.make_from_state(player_state)
                 session.add(player_info)
             else:
                 player_info.name = player_state.name
-                player_info.pro_name = player_state.pro_name
-                player_info.custom_name = player_state.custom_name
+                Player.import_export(player_state, player_info)
             session.commit()
-
