@@ -8,11 +8,13 @@ win-install:
 
 ## Run the development files
 win-run: win-gen-ui win-gen-resources
-	.\.wvenv\Scripts\python.exe .\main.py
+	.\.wvenv\Scripts\python.exe .\d2notes\main.py
 
 ## Remove development environment
 win-clean:
 	rm -r .\.wvenv\
+	rm -r .\build
+	rm -r .\dist
 
 # Generate UI from Qt Designer files
 win-gen-ui:
@@ -23,8 +25,9 @@ win-gen-resources:
 	.\.wvenv\Scripts\pyside6-rcc.exe ./d2notes/ui/resources.qrc -o ./d2notes/ui/resources_rc.py
 
 ## Generate a production build
-#win-build:
-#	.\.wvenv\Scripts\pyinstaller.exe --distpath ../build/dist --workpath ../build --onedir -n twitchbot --add-data ".\default\settings.ini;." --add-data ".\default\sqlite.db;." --add-data ".\bot\data;data" .\app.py
+win-build:
+	.\.wvenv\Scripts\pyinstaller.exe --noconfirm .\DotaNotes.spec
+	Compress-Archive -Force -Path "./dist/DotaNotes/" -DestinationPath "dist/DotaNotes.zip"
 
 ## Move the development database to latest migration
 #win-db-upgrade:
@@ -48,7 +51,7 @@ unix-install:
 
 ## Run the development files
 unix-run: unix-gen-ui unix-gen-resources
-	.venv/bin/python3 main.py
+	.venv/bin/python3 ./d2notes/main.py
 
 ## Remove development environment
 unix-clean:
@@ -61,6 +64,10 @@ unix-gen-ui:
 # Generate embedded resources from Qt resource file
 unix-gen-resources:
 	./.venv/Scripts/pyside6-rcc ./d2notes/ui/resources.qrc -o ./d2notes/ui/resources_rc.py
+
+## Generate a production build
+unix-build:
+	./.venv/Script/pyinstaller --noconfirm ./DotaNotes.spec
 
 ## Move the development database to latest migration
 #unix-db-upgrade:
