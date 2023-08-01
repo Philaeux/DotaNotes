@@ -15,7 +15,7 @@ class D2Notes:
     def __init__(self):
         self.state = ApplicationState()
 
-        self.match_id_from_gsi = multiprocessing.Queue()
+        self.match_information_from_gsi = multiprocessing.Queue()
         self.user_steam_id_to_dota = multiprocessing.Queue()
         self.server_id_from_dota = multiprocessing.Queue()
         self.database = Database()
@@ -25,7 +25,7 @@ class D2Notes:
 
     def run(self):
         # Web Server
-        app_flask = multiprocessing.Process(target=flask_process, args=(58765, self.match_id_from_gsi,))
+        app_flask = multiprocessing.Process(target=flask_process, args=(58765, self.match_information_from_gsi,))
         app_flask.start()
 
         # Dota client

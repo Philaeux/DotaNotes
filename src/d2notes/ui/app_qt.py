@@ -53,12 +53,15 @@ class QtApp:
         return return_code
 
     def process_queues(self):
-        while not self.d2notes.match_id_from_gsi.empty():
-            match_id = self.d2notes.match_id_from_gsi.get(block=False)
-            if self.d2notes.state.match_id != match_id and match_id != 0:
-                self.d2notes.state.match_id = match_id
-                self.status_message(f"Detected match id {self.d2notes.state.match_id!s} from GSI.")
+        while not self.d2notes.match_information_from_gsi.empty():
+            match_info = self.d2notes.match_information_from_gsi.get(block=False)
+            if self.d2notes.state.match_id != match_info["match_id"]:
+                self.d2notes.state.match_id = match_info["match_id"]
+                self.d2notes.state.server_id = 0
+                self.status_message(f"Detected match {self.d2notes.state.match_id!s} from GSI.")
+                self.update_state_with_gsi(self.d2notes.state, match_info)
                 self.draw_match_with_state(self.d2notes.state)
+                self.draw_details_with_player(0)
         while not self.d2notes.server_id_from_dota.empty():
             server_id = self.d2notes.server_id_from_dota.get(block=False)
             if server_id != 0:
@@ -141,10 +144,7 @@ class QtApp:
             if "match_id" in json["match"]:
                 state.match_id = int(json["match"]["match_id"])
         if "teams" in json and isinstance(json["teams"], list):
-            old_player_state = {}
-            for player in state.players:
-                old_player_state[player.steam_id] = player
-            state.fresh_players()
+            old_player_state = state.fresh_players()
             for team in json["teams"]:
                 if "players" in team and isinstance(team["players"], list):
                     for player in team["players"]:
@@ -152,10 +152,17 @@ class QtApp:
                             if "accountid" in player:
                                 state.players[player["playerid"]].steam_id = player["accountid"]
                                 if player["accountid"] in old_player_state:
-                                    state.players[player["playerid"]].pro_name = old_player_state[player["accountid"]].pro_name
-                                    state.players[player["playerid"]].custom_name = old_player_state[player["accountid"]].custom_name
+                                    state.players[player["playerid"]].__dict__ = old_player_state[player["accountid"]].__dict__.copy()
                             if "name" in player:
                                 state.players[player["playerid"]].name = player["name"]
+
+    def update_state_with_gsi(self, state, match_info):
+        old_player_state = state.fresh_players()
+        for index, player in enumerate(match_info["players"]):
+            state.players[index].steam_id = player["accountid"]
+            if player["accountid"] in old_player_state:
+                state.players[index].__dict__ = old_player_state[player["accountid"]].__dict__.copy()
+            state.players[index].name = player["name"]
 
     def update_state_with_database(self, state):
         with Session(self.d2notes.database.engine) as session:
