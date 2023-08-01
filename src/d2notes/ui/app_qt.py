@@ -22,9 +22,11 @@ class QtApp:
         # Connect actions
         self.window.actionSettings.triggered.connect(lambda: print("TODO"))
         self.window.actionExit.triggered.connect(self.window.close)
-        self.window.buttonPhilaeux.clicked.connect(lambda: self.window.inputSteamId.setText("76561197961298382"))
         self.window.buttonBububu.clicked.connect(lambda: self.window.inputSteamId.setText("76561198066647717"))
+        self.window.buttonBulldog.clicked.connect(lambda: self.window.inputSteamId.setText("76561198053098358"))
         self.window.buttonGrubby.clicked.connect(lambda: self.window.inputSteamId.setText("76561198809738927"))
+        self.window.buttonPhilaeux.clicked.connect(lambda: self.window.inputSteamId.setText("76561197961298382"))
+        self.window.buttonS4.clicked.connect(lambda: self.window.inputSteamId.setText("76561198001497299"))
         self.window.buttonSearch.clicked.connect(self.on_search_game)
         self.window.buttonDetailsSave.clicked.connect(self.save_player_details)
         for i in range(10):
@@ -78,10 +80,11 @@ class QtApp:
         for char in label_name:
             if char.isdigit():
                 row = int(char)
-        self.lastIndexSelected = row
         self.draw_details_with_player(row)
 
     def draw_details_with_player(self, player_slot):
+        self.lastIndexSelected = player_slot
+
         player_state = self.d2notes.state.players[player_slot]
         self.window.labelDetailsSteamId.setText(str(player_state.steam_id))
         self.window.labelDetailsName.setText(player_state.name)
@@ -112,6 +115,12 @@ class QtApp:
         getattr(self.window, f"labelPlayer{player_slot}CustomName").setText(
             player_data.custom_name if player_data.custom_name is not None else "")
         getattr(self.window, f"labelPlayer{player_slot}Smurf").setText(player_data.smurf)
+        getattr(self.window, f"labelPlayer{player_slot}FlagRacist").setVisible(player_data.is_racist)
+        getattr(self.window, f"labelPlayer{player_slot}FlagSexist").setVisible(player_data.is_sexist)
+        getattr(self.window, f"labelPlayer{player_slot}FlagToxic").setVisible(player_data.is_toxic)
+        getattr(self.window, f"labelPlayer{player_slot}FlagFeeder").setVisible(player_data.is_feeder)
+        getattr(self.window, f"labelPlayer{player_slot}FlagGivesUp").setVisible(player_data.gives_up)
+        getattr(self.window, f"labelPlayer{player_slot}FlagDestroyer").setVisible(player_data.destroys_items)
 
     def on_search_game(self):
         if self.window.inputSteamId.text() != "":

@@ -4,37 +4,39 @@ win-install:
 	python -m venv .wvenv
 	.\.wvenv\Scripts\python.exe -m pip install --upgrade pip
 	.\.wvenv\Scripts\python.exe -m pip install -r .\requirements.txt
-	"$(get-location)" > .\.wvenv\Lib\site-packages\bot.pth
+	"$(get-location)" > .\.wvenv\Lib\site-packages\d2notes.pth
 
 ## Run the development files
-win-run: win-genui win-genresources
+win-run: win-gen-ui win-gen-resources
 	.\.wvenv\Scripts\python.exe .\main.py
 
 ## Remove development environment
 win-clean:
-	rm -r .wvenv
+	rm -r .\.wvenv\
 
-win-genui:
+# Generate UI from Qt Designer files
+win-gen-ui:
 	.\.wvenv\Scripts\pyside6-uic.exe ./d2notes/ui/ui_main_window.ui -o ./d2notes/ui/ui_main_window.py --absolute-imports -python-paths .
 
-win-genresources:
+# Generate embedded resources from Qt resource file
+win-gen-resources:
 	.\.wvenv\Scripts\pyside6-rcc.exe ./d2notes/ui/resources.qrc -o ./d2notes/ui/resources_rc.py
 
 ## Generate a production build
-win-build:
-	.\.wvenv\Scripts\pyinstaller.exe --distpath ../build/dist --workpath ../build --onedir -n twitchbot --add-data ".\default\settings.ini;." --add-data ".\default\sqlite.db;." --add-data ".\bot\data;data" .\app.py
+#win-build:
+#	.\.wvenv\Scripts\pyinstaller.exe --distpath ../build/dist --workpath ../build --onedir -n twitchbot --add-data ".\default\settings.ini;." --add-data ".\default\sqlite.db;." --add-data ".\bot\data;data" .\app.py
 
 ## Move the development database to latest migration
-win-db-upgrade:
-	$env:PYTHONPATH="$(get-location)" ; .\.wvenv\Scripts\alembic.exe upgrade head
+#win-db-upgrade:
+#	$env:PYTHONPATH="$(get-location)" ; .\.wvenv\Scripts\alembic.exe upgrade head
 
 ## Move the development database back by one migration
-win-db-downgrade:
-	$env:PYTHONPATH="$(get-location)" ; .\.wvenv\Scripts\alembic.exe downgrade -1
+#win-db-downgrade:
+#	$env:PYTHONPATH="$(get-location)" ; .\.wvenv\Scripts\alembic.exe downgrade -1
 
 ## Generate a new database migration by scanning Models files
-win-db-migrate:
-	$env:PYTHONPATH="$(get-location)" ; .\.wvenv\Scripts\alembic.exe revision --autogenerate
+#win-db-migrate:
+#	$env:PYTHONPATH="$(get-location)" ; .\.wvenv\Scripts\alembic.exe revision --autogenerate
 
 # Unix environment
 ## Create a virtual environment and install dependencies
@@ -42,24 +44,32 @@ unix-install:
 	python3 -m venv .venv
 	.venv/bin/pip3 install --upgrade pip
 	.venv/bin/pip3 install -r requirements.txt
-	$(foreach dir, $(wildcard .venv/lib/*), echo $(shell pwd) > $(dir)/site-packages/bot.pth &&) echo
+	$(foreach dir, $(wildcard .venv/lib/*), echo $(shell pwd) > $(dir)/site-packages/d2notes.pth &&) echo
 
 ## Run the development files
-unix-run:
+unix-run: unix-gen-ui unix-gen-resources
 	.venv/bin/python3 main.py
 
 ## Remove development environment
 unix-clean:
 	rm -rf .venv
 
+# Generate UI from Qt Designer files
+unix-gen-ui:
+	./.venv/Scripts/pyside6-uic ./d2notes/ui/ui_main_window.ui -o ./d2notes/ui/ui_main_window.py --absolute-imports -python-paths .
+
+# Generate embedded resources from Qt resource file
+unix-gen-resources:
+	./.venv/Scripts/pyside6-rcc ./d2notes/ui/resources.qrc -o ./d2notes/ui/resources_rc.py
+
 ## Move the development database to latest migration
-unix-db-upgrade:
-	export PYTHONPATH=${PWD} | .venv/bin/alembic upgrade head
+#unix-db-upgrade:
+#	export PYTHONPATH=${PWD} | .venv/bin/alembic upgrade head
 
 ## Move the development database back by one migration
-unix-db-downgrade:
-	export PYTHONPATH=${PWD} | .venv/bin/alembic downgrade -1
+#unix-db-downgrade:
+#	export PYTHONPATH=${PWD} | .venv/bin/alembic downgrade -1
 
 ## Generate a new database migration by scanning Models files
-unix-db-migrate:
-	export PYTHONPATH=${PWD} | .venv/bin/alembic revision --autogenerate
+#unix-db-migrate:
+#	export PYTHONPATH=${PWD} | .venv/bin/alembic revision --autogenerate

@@ -15,3 +15,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.comboBoxDetailsSmurf.addItem("Maybe")
         self.comboBoxDetailsSmurf.addItem("Smurf")
         self.comboBoxDetailsSmurf.addItem("Sweaty Smurf")
+
+        for i in range(10):
+            getattr(self, f"labelPlayer{i}FlagRacist").setVisible(False)
+            getattr(self, f"labelPlayer{i}FlagSexist").setVisible(False)
+            getattr(self, f"labelPlayer{i}FlagToxic").setVisible(False)
+            getattr(self, f"labelPlayer{i}FlagFeeder").setVisible(False)
+            getattr(self, f"labelPlayer{i}FlagGivesUp").setVisible(False)
+            getattr(self, f"labelPlayer{i}FlagDestroyer").setVisible(False)

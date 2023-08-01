@@ -1,5 +1,10 @@
 <RCC>
   <qresource>
+    <file>images/destroyer.png</file>
+    <file>images/feeder.png</file>
+    <file>images/givesup.png</file>
+    <file>images/sexist.png</file>
     <file>images/toxic.png</file>
+    <file>images/racist.png</file>
   </qresource>
 </RCC>
