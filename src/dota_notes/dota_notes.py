@@ -1,17 +1,16 @@
-import logging
 import multiprocessing
 import sys
 
-from d2notes.data.application_state import ApplicationState
-from d2notes.data.database import Database, Setting
-from d2notes.app_flask import flask_process
-from d2notes.app_dota import dota_process
-from d2notes.ui.app_qt import QtApp
+from dota_notes.data.application_state import ApplicationState
+from dota_notes.data.database import Database, Setting
+from dota_notes.app_flask import flask_process
+from dota_notes.app_dota import dota_process
+from dota_notes.ui.app_qt import QtApp
 
 from sqlalchemy.orm import Session
 
 
-class D2Notes:
+class DotaNotes:
     def __init__(self):
         self.state = ApplicationState()
 

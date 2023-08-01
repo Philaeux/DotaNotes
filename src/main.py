@@ -1,6 +1,7 @@
 import multiprocessing
-from d2notes.d2notes import D2Notes
+
+from dota_notes.dota_notes import DotaNotes
 
 if __name__ == '__main__':
     multiprocessing.freeze_support()
-    D2Notes().run()
+    DotaNotes().run()

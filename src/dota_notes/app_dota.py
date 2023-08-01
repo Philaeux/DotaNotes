@@ -1,11 +1,8 @@
 from steam.client import SteamClient
 from dota2.client import Dota2Client
-from steam.client.user import SteamUser
 from dota2.msg import EDOTAGCMsg
-from steam.enums.emsg import EMsg
 
 import logging
-
 logging.basicConfig(format='[%(asctime)s] %(levelname)s %(name)s: %(message)s', level=logging.DEBUG)
 
 

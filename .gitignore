@@ -3,10 +3,10 @@ __pycache__
 
 src/.wvenv/
 src/.venv/
-src/d2notes/data/sqlite.db
+src/dota_notes/data/sqlite.db
 
 src/build
 src/dist
 src/bundle
-src/d2notes/ui/resources_rc.py
-src/d2notes/ui/ui_main_window.py
+src/dota_notes/ui/resources_rc.py
+src/dota_notes/ui/ui_main_window.py

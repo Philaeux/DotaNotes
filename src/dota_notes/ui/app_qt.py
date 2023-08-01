@@ -5,9 +5,10 @@ from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QApplication
 
 from sqlalchemy.orm import Session
-from d2notes.data.database import Setting, Player
-from d2notes.helpers import get_game_live_stats
-from d2notes.ui.main_window import MainWindow
+
+from dota_notes.data.database import Setting, Player
+from dota_notes.helpers import get_game_live_stats
+from dota_notes.ui.main_window import MainWindow
 
 
 class QtApp:

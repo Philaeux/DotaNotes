@@ -1,7 +1,6 @@
 from PySide6.QtCore import QObject
 
-from d2notes.data.database import Player
-from d2notes.data.player_state import PlayerState
+from dota_notes.data.player_state import PlayerState
 
 
 class ApplicationState(QObject):
