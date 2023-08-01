@@ -27,7 +27,8 @@ win-gen-resources:
 ## Generate a production build
 win-build:
 	.\.wvenv\Scripts\pyinstaller.exe --noconfirm .\DotaNotes.spec
-	Compress-Archive -Force -Path "./dist/DotaNotes/" -DestinationPath "dist/DotaNotes.zip"
+	md -Force .\bundle
+	Compress-Archive -Force -Path "./dist/DotaNotes/" -DestinationPath "bundle/DotaNotes.zip"
 
 ## Move the development database to latest migration
 #win-db-upgrade:
