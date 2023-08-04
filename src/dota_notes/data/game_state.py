@@ -3,7 +3,7 @@ from PySide6.QtCore import QObject
 from dota_notes.data.player_state import PlayerState
 
 
-class ApplicationState(QObject):
+class GameState(QObject):
     match_id = 0
     server_id = 0
     players = []

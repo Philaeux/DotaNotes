@@ -7,13 +7,14 @@ from PySide6.QtWidgets import QApplication
 from sqlalchemy.orm import Session
 
 from dota_notes.data.database import Setting, Player
+from dota_notes.data.messages import Message, MessageType, MessageServerIdResponse, MessageConSatus, MessageServerIdRequest
 from dota_notes.helpers import get_game_live_stats
 from dota_notes.ui.main_window import MainWindow
 
 
 class QtApp:
-    def __init__(self, d2notes):
-        self.d2notes = d2notes
+    def __init__(self, dota_notes):
+        self.dota_notes = dota_notes
 
         # Build App
         self.app = QApplication(sys.argv)
@@ -21,8 +22,11 @@ class QtApp:
         self.lastIndexSelected = 0
 
         # Connect actions
-        self.window.actionSettings.triggered.connect(lambda: print("TODO"))
+        self.window.actionSettings.triggered.connect(self.on_open_settings)
         self.window.actionExit.triggered.connect(self.window.close)
+        self.window.buttonSettingsSave.clicked.connect(self.on_settings_save)
+        self.window.buttonSettingsCancel.clicked.connect(self.on_settings_cancel)
+        self.window.buttonConnect.clicked.connect(self.on_connect_client)
         self.window.buttonBububu.clicked.connect(lambda: self.window.inputSteamId.setText("76561198066647717"))
         self.window.buttonBulldog.clicked.connect(lambda: self.window.inputSteamId.setText("76561198053098358"))
         self.window.buttonGrubby.clicked.connect(lambda: self.window.inputSteamId.setText("76561198809738927"))
@@ -33,13 +37,10 @@ class QtApp:
         for i in range(10):
             getattr(self.window, f"labelPlayer{i}Name").clicked.connect(self.on_label_click)
 
-        with Session(self.d2notes.database.engine) as session:
+        with Session(self.dota_notes.database.engine) as session:
             last_search = session.get(Setting, "last_search")
             if last_search is not None:
                 self.window.inputSteamId.setText(last_search.value)
-
-        self.status_message("Ready")
-
         self.window.show()
 
     def status_message(self, message, timeout=0):
@@ -54,30 +55,51 @@ class QtApp:
         return return_code
 
     def process_queues(self):
-        while not self.d2notes.match_information_from_gsi.empty():
-            match_info = self.d2notes.match_information_from_gsi.get(block=False)
-            if self.d2notes.state.match_id != match_info["match_id"]:
-                self.d2notes.state.match_id = match_info["match_id"]
-                self.d2notes.state.server_id = 0
-                self.status_message(f"Detected match {self.d2notes.state.match_id!s} from GSI.")
-                self.update_state_with_gsi(self.d2notes.state, match_info)
-                self.draw_match_with_state(self.d2notes.state)
+        while not self.dota_notes.match_information_from_gsi.empty():
+            match_info = self.dota_notes.match_information_from_gsi.get(block=False)
+            if self.dota_notes.state.match_id != match_info["match_id"]:
+                self.dota_notes.state.match_id = match_info["match_id"]
+                self.dota_notes.state.server_id = 0
+                self.status_message(f"Detected match {self.dota_notes.state.match_id!s} from GSI.")
+                self.update_state_with_gsi(self.dota_notes.state, match_info)
+                self.draw_match_with_state(self.dota_notes.state)
                 self.draw_details_with_player(0)
-        while not self.d2notes.server_id_from_dota.empty():
-            server_id = self.d2notes.server_id_from_dota.get(block=False)
-            if server_id != 0:
-                self.d2notes.state.server_id = server_id
-                game_json = get_game_live_stats(self.d2notes.steam_api_key, self.d2notes.state.server_id)
-                self.update_state_with_json(self.d2notes.state, game_json)
-                self.update_state_with_database(self.d2notes.state)
-                self.status_message("Found game info for player " + self.window.inputSteamId.text() + " using WEBAPI.")
-                self.draw_match_with_state(self.d2notes.state)
-                self.draw_details_with_player(0)
-            else:
-                self.status_message("No game found for player " + self.window.inputSteamId.text())
+        while not self.dota_notes.message_queue_qt.empty():
+            message: Message = self.dota_notes.message_queue_qt.get(block=False)
+            if message.message_type == MessageType.SERVER_ID_RESPONSE:
+                server_id_message: MessageServerIdResponse = message.payload
+                if server_id_message.server_id != 0:
+                    self.dota_notes.state.server_id = server_id_message.server_id
+                    game_json = get_game_live_stats(self.dota_notes.settings.steam_api_key, self.dota_notes.state.server_id)
+                    self.update_state_with_json(self.dota_notes.state, game_json)
+                    self.update_state_with_database(self.dota_notes.state)
+                    self.status_message("Found game info for player " + self.window.inputSteamId.text() + " using WEBAPI.")
+                    self.draw_match_with_state(self.dota_notes.state)
+                    self.draw_details_with_player(0)
+                else:
+                    self.status_message("No game found for player " + self.window.inputSteamId.text())
+            elif message.message_type == MessageType.CLIENTS_STATUS:
+                con_status_message: MessageConSatus = message.payload
+                self.window.draw_connection_status(con_status_message.steam, con_status_message.dota)
 
     def on_open_settings(self):
-        pass
+        self.window.comboBoxSettingsMode.setCurrentText(self.dota_notes.settings.software_mode)
+        self.window.lineEditSettingsProxyURL.setText(self.dota_notes.settings.proxy_url)
+        self.window.lineEditSettingsProxyAPIKey.setText(self.dota_notes.settings.proxy_api_key)
+        self.window.lineEditSettingsSteamUser.setText(self.dota_notes.settings.steam_user)
+        self.window.lineEditSettingsSteamPassword.setText(self.dota_notes.settings.steam_password)
+        self.window.lineEditSettingsSteamAPIKey.setText(self.dota_notes.settings.steam_api_key)
+        self.window.centralStackedWidget.setCurrentIndex(1)
+
+    def on_settings_save(self):
+        self.window.centralStackedWidget.setCurrentIndex(0)
+
+    def on_settings_cancel(self):
+        self.window.centralStackedWidget.setCurrentIndex(0)
+
+    def on_connect_client(self):
+        self.window.buttonConnect.setVisible(False)
+        self.dota_notes.message_queue_dota.put(Message(MessageType.CLIENTS_CONNECT))
 
     def on_label_click(self, label_name, label_text):
         row = 0
@@ -89,7 +111,7 @@ class QtApp:
     def draw_details_with_player(self, player_slot):
         self.lastIndexSelected = player_slot
 
-        player_state = self.d2notes.state.players[player_slot]
+        player_state = self.dota_notes.state.players[player_slot]
         self.window.labelDetailsSteamId.setText(str(player_state.steam_id))
         self.window.labelDetailsName.setText(player_state.name)
         self.window.labelDetailsProName.setText(
@@ -128,8 +150,9 @@ class QtApp:
 
     def on_search_game(self):
         if self.window.inputSteamId.text() != "":
-            self.d2notes.user_steam_id_to_dota.put(self.window.inputSteamId.text())
-            with Session(self.d2notes.database.engine) as session:
+            self.dota_notes.message_queue_dota.put(Message(MessageType.SERVER_ID_REQUEST,
+                                                           MessageServerIdRequest(self.window.inputSteamId.text())))
+            with Session(self.dota_notes.database.engine) as session:
                 last_search = session.query(Setting).filter_by(key="last_search").one_or_none()
                 if last_search is not None:
                     last_search.value = self.window.inputSteamId.text()
@@ -166,7 +189,7 @@ class QtApp:
             state.players[index].name = player["name"]
 
     def update_state_with_database(self, state):
-        with Session(self.d2notes.database.engine) as session:
+        with Session(self.dota_notes.database.engine) as session:
             for player in state.players:
                 if player.steam_id == 0:
                     continue
@@ -175,7 +198,7 @@ class QtApp:
                     Player.import_export(player_db, player)
 
     def save_player_details(self):
-        player_state = self.d2notes.state.players[self.lastIndexSelected]
+        player_state = self.dota_notes.state.players[self.lastIndexSelected]
         player_state.pro_name = \
             self.window.labelDetailsProName.text() if self.window.labelDetailsProName != "" else None
         player_state.custom_name = self.window.inputDetailsCustomName.text()
@@ -188,7 +211,7 @@ class QtApp:
         player_state.destroys_items = self.window.checkBoxDetailsDestroysItems.isChecked()
         player_state.note = self.window.inputDetailsNote.toPlainText()
         self.draw_match_player(self.lastIndexSelected, player_state)
-        with Session(self.d2notes.database.engine) as session:
+        with Session(self.dota_notes.database.engine) as session:
             player_info = session.get(Player, str(player_state.steam_id))
             if player_info is None:
                 player_info = Player.make_from_state(player_state)

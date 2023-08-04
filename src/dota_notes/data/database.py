@@ -20,12 +20,6 @@ class Database:
         with Session(self.engine) as session:
             if session.get(Setting, "version") is None:
                 session.add(Setting("version", "1"))
-            if session.query(Setting).filter_by(key="steam_user").one_or_none() is None:
-                session.add(Setting("steam_user", ""))
-            if session.query(Setting).filter_by(key="steam_password").one_or_none() is None:
-                session.add(Setting("steam_password", ""))
-            if session.query(Setting).filter_by(key="steam_api_key").one_or_none() is None:
-                session.add(Setting("steam_api_key", ""))
             session.commit()
 
 
