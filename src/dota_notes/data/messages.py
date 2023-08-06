@@ -1,25 +1,25 @@
-from typing import Optional
-from enum import Enum
+class MessageConnect:
+    """Ask the client to connect with specific credentials
+
+    Attributes:
+        user: steam username
+        password: steam password
+    """
+    user: str
+    password: str
+
+    def __init__(self, user: str, password: str):
+        self.user = user
+        self.password = password
 
 
-class MessageType(Enum):
-    UNKNOWN = 0
-    CLIENTS_STATUS = 1
-    CLIENTS_CONNECT = 2
-    SERVER_ID_REQUEST = 3
-    SERVER_ID_RESPONSE = 4
+class MessageConnectionStatus:
+    """Report the status of the connections of steam/dota clients
 
-
-class Message:
-    message_type: MessageType = MessageType.UNKNOWN
-    payload: Optional[object]
-
-    def __init__(self, message_type: MessageType, payload: Optional[object] = None):
-        self.message_type = message_type
-        self.payload = payload
-
-
-class MessageConSatus:
+    Attributes:
+        steam: Steam connection status
+        dota: Dota connection status
+    """
     steam: str
     dota: str
 
@@ -29,6 +29,7 @@ class MessageConSatus:
 
 
 class MessageServerIdRequest:
+    """Request the server ID a specific account is playing on"""
     account_id: str
 
     def __init__(self, account_id: str):
@@ -36,6 +37,7 @@ class MessageServerIdRequest:
 
 
 class MessageServerIdResponse:
+    """Server ID where a specific player is playing on"""
     server_id: int
 
     def __init__(self, server_id: int):

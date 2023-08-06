@@ -14,8 +14,7 @@ def get_game_live_stats(api_key, server_id):
         s = requests.Session()
         retries = Retry(total=8, backoff_jitter=1, status_forcelist=[400])
         s.mount("https://", HTTPAdapter(max_retries=retries))
-        url = "https://api.steampowered.com/IDOTA2MatchStats_570/GetRealtimeStats/v1/?key=" + \
-              api_key + "&server_steam_id=" + str(server_id)
+        url = f"https://api.steampowered.com/IDOTA2MatchStats_570/GetRealtimeStats/v1/?key={api_key}&server_steam_id={str(server_id)}"
         response = s.get(url)
         response.raise_for_status()
 

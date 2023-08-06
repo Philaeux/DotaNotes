@@ -2,17 +2,18 @@ from flask import Flask, request, jsonify
 
 
 def flask_process(port, match_info_queue):
-    """Simple Flask application listening to GSI and sends match_ids detected to the Qt Application.
-
-    Args:
-        port: port to listen to
-        match_info_queue: Queue to transmit the match information
-    """
+    """Flask app spawner"""
     flask_app = FlaskApp(port, match_info_queue)
     flask_app.run()
 
 
 class FlaskApp:
+    """Simple Flask application listening to GSI and sends info detected to the Qt Application.
+
+    Args:
+        port: port to listen to
+        match_info_queue: Queue to transmit the match information
+    """
     def __init__(self, port, match_info_queue):
         self.app = Flask(__name__)
         self.port = port

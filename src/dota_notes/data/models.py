@@ -1,33 +1,56 @@
 import os
 import sys
-from select import select
 from typing import Optional
 
 from sqlalchemy import create_engine, String
 from sqlalchemy.orm import Session, DeclarativeBase, mapped_column, Mapped
 
 
-class Database:
+class Database(object):
+    """Singleton defining database URI and unique ressources.
+
+    Attributes:
+        _instance: Singleton instance
+        uri: database location
+        engine: database connection used for session generation
+    """
+
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        """New overload to create a singleton."""
+        if not isinstance(cls._instance, cls):
+            cls._instance = object.__new__(cls)
+        return cls._instance
+
     def __init__(self):
+        """Defines all necessary ressources (URI & engine) and create database if necessary."""
         if getattr(sys, 'frozen', False):
             file_uri = os.path.dirname(sys.executable)
         elif __file__:
             file_uri = os.path.dirname(__file__)
         self.uri = 'sqlite+pysqlite:///{0}/sqlite.db'.format(file_uri)
         self.engine = create_engine(self.uri, echo=False)
-        Base.metadata.create_all(self.engine)
+        BaseEntity.metadata.create_all(self.engine)
 
         with Session(self.engine) as session:
-            if session.get(Setting, "version") is None:
-                session.add(Setting("version", "1"))
+            if session.get(SettingEntity, "version") is None:
+                session.add(SettingEntity("version", "1"))
             session.commit()
 
 
-class Base(DeclarativeBase):
+class BaseEntity(DeclarativeBase):
+    """Database model base class"""
     pass
 
 
-class Setting(Base):
+class SettingEntity(BaseEntity):
+    """An application setting.
+
+    Attributes:
+        key: unique string defining a setting
+        value: value of the setting
+    """
     __tablename__ = 'settings'
 
     key: Mapped[str] = mapped_column(primary_key=True)
@@ -41,7 +64,23 @@ class Setting(Base):
         return f"Setting(key={self.key!r}, value={self.value!r})"
 
 
-class Player(Base):
+class PlayerEntity(BaseEntity):
+    """Player information
+
+    Attributes:
+        steam_id: unique identifier
+        name: last seen name
+        pro_name: pro name (if fetched from the API)
+        custom_name: user set name
+        smurf: user defined smurf indicator
+        is_racist: flag
+        is_sexist: flag
+        is_toxic: flag
+        is_feeder: flag
+        gives_up: flag
+        destroys_items: flag
+        note: user set note
+    """
     __tablename__ = 'players'
 
     steam_id: Mapped[str] = mapped_column(primary_key=True)
@@ -74,7 +113,12 @@ class Player(Base):
 
     @staticmethod
     def make_from_state(player_state):
-        return Player(
+        """Create an entity from its state counterpart
+
+        Args:
+            player_state: state to import information from
+        """
+        return PlayerEntity(
             str(player_state.steam_id),
             player_state.name,
             player_state.pro_name if player_state.pro_name != "" else None,
@@ -89,6 +133,12 @@ class Player(Base):
 
     @staticmethod
     def import_export(from_object, to_object):
+        """Copy the attributes from state to entity (or reverse)
+
+        Args:
+            from_object: Object to copy attributes from (can be entity or state)
+            to_object: Object to copy attributes to (can be entity or state)
+        """
         to_object.pro_name = from_object.pro_name
         to_object.custom_name = from_object.custom_name
         to_object.smurf = from_object.smurf
@@ -101,5 +151,4 @@ class Player(Base):
         to_object.note = from_object.note
 
     def __repr__(self) -> str:
-        return f"Player(steam_id{self.steam_id!r}, last_seen_name={self.name!r}, " \
-               f"pro_name={self.pro_name!r}, custom_name={self.custom_name!r}, smurf={self.smurf!r})"
+        return f"Player(steam_id{self.steam_id!r}, last_seen_name={self.name!r}, custom_name={self.custom_name!r})"
