@@ -24,7 +24,7 @@
     <item>
      <widget class="QStackedWidget" name="centralStackedWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page0">
        <widget class="QWidget" name="horizontalWidget_2" native="true">
@@ -328,9 +328,16 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="buttonSearch">
+                <widget class="QPushButton" name="buttonSearchLive">
                  <property name="text">
-                  <string>Search</string>
+                  <string>Search Live</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="buttonSearchLast">
+                 <property name="text">
+                  <string>Search Last</string>
                  </property>
                 </widget>
                </item>

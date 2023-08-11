@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['dota_notes/main.py'],
+    ['main.py'],
     pathex=[],
     binaries=[],
     datas=[],
