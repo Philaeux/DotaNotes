@@ -1,4 +1,4 @@
-from dota_notes.data.models import SettingEntity
+from dota_notes.data.models.settings_entity import SettingEntity
 
 
 class Settings(object):
@@ -7,27 +7,14 @@ class Settings(object):
     Attributes:
         _instance: Singleton instance
         gsi_port: Port used by the http server awaiting request from GSI
-        gsi_spectate: flag to enable gsi spectate or not
-        software_mode: Mode the software works into
-        proxy_url: URL to do requests at when using "Proxy" mode
-        proxy_api_key: Key to use in "Proxy" mode
-        steam_user: Steam username in "Client" mode
-        steam_password: Steam password in "Client" mode
-        steam_api_key: Steam WEB API key in "Client" mode
+        stratz_token: ...
     """
 
     _instance = None
     gsi_port: int = 58765
-    gsi_spectate: bool = False
-    software_mode: str = "Client"
-    proxy_url: str = "https://dota-notes.the-cluster.org"
-    proxy_api_key: str = ""
-    steam_user: str = ""
-    steam_password: str = ""
-    steam_api_key: str = ""
+    stratz_token: str = ""
 
-    TO_IMPORT_EXPORT = ["gsi_port", "gsi_spectate", "software_mode", "proxy_url", "proxy_api_key", "steam_user",
-                        "steam_password", "steam_api_key"]
+    TO_IMPORT_EXPORT = ["gsi_port", "stratz_token"]
 
     def __new__(cls, *args, **kwargs):
         """New overload to create a singleton."""

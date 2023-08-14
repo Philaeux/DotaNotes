@@ -1,67 +1,9 @@
-import os
-import sys
 from typing import Optional
 
-from sqlalchemy import create_engine, String
-from sqlalchemy.orm import Session, DeclarativeBase, mapped_column, Mapped
+from sqlalchemy import String
+from sqlalchemy.orm import Mapped, mapped_column
 
-
-class Database(object):
-    """Singleton defining database URI and unique ressources.
-
-    Attributes:
-        _instance: Singleton instance
-        uri: database location
-        engine: database connection used for session generation
-    """
-
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        """New overload to create a singleton."""
-        if not isinstance(cls._instance, cls):
-            cls._instance = object.__new__(cls)
-        return cls._instance
-
-    def __init__(self):
-        """Defines all necessary ressources (URI & engine) and create database if necessary."""
-        if getattr(sys, 'frozen', False):
-            file_uri = os.path.dirname(sys.executable)
-        elif __file__:
-            file_uri = os.path.dirname(__file__)
-        self.uri = 'sqlite+pysqlite:///{0}/sqlite.db'.format(file_uri)
-        self.engine = create_engine(self.uri, echo=False)
-        BaseEntity.metadata.create_all(self.engine)
-
-        with Session(self.engine) as session:
-            if session.get(SettingEntity, "version") is None:
-                session.add(SettingEntity("version", "1"))
-            session.commit()
-
-
-class BaseEntity(DeclarativeBase):
-    """Database model base class"""
-    pass
-
-
-class SettingEntity(BaseEntity):
-    """An application setting.
-
-    Attributes:
-        key: unique string defining a setting
-        value: value of the setting
-    """
-    __tablename__ = 'settings'
-
-    key: Mapped[str] = mapped_column(primary_key=True)
-    value: Mapped[str] = mapped_column()
-
-    def __init__(self, key, value):
-        self.key = key
-        self.value = value
-
-    def __repr__(self) -> str:
-        return f"Setting(key={self.key!r}, value={self.value!r})"
+from dota_notes.data.models.base_entity import BaseEntity
 
 
 class PlayerEntity(BaseEntity):
@@ -72,7 +14,9 @@ class PlayerEntity(BaseEntity):
         name: last seen name
         pro_name: pro name (if fetched from the API)
         custom_name: user set name
+        match_count: number of games played by the user (set by stratz)
         smurf: user defined smurf indicator
+        smurf_stratz: smurf flag (set by stratz)
         is_racist: flag
         is_sexist: flag
         is_toxic: flag
@@ -87,7 +31,9 @@ class PlayerEntity(BaseEntity):
     name: Mapped[str] = mapped_column()
     pro_name: Mapped[Optional[str]] = mapped_column()
     custom_name: Mapped[str] = mapped_column()
+    match_count: Mapped[Optional[int]] = mapped_column()
     smurf: Mapped[str] = mapped_column()
+    smurf_stratz: Mapped[Optional[int]] = mapped_column()
     is_racist: Mapped[bool] = mapped_column()
     is_sexist: Mapped[bool] = mapped_column()
     is_toxic: Mapped[bool] = mapped_column()
@@ -96,13 +42,16 @@ class PlayerEntity(BaseEntity):
     destroys_items: Mapped[bool] = mapped_column()
     note: Mapped[str] = mapped_column(String(500))
 
-    def __init__(self, steam_id, name, pro_name=None, custom_name="", smurf="", is_racist=False, is_sexist=False,
-                 is_toxic=False, is_feeder=False, gives_up=False, destroys_items=False, note=""):
+    def __init__(self, steam_id, name, pro_name=None, custom_name="", match_count=None, smurf="", smurf_stratz=None,
+                 is_racist=False, is_sexist=False, is_toxic=False, is_feeder=False, gives_up=False,
+                 destroys_items=False, note=""):
         self.steam_id = steam_id
         self.name = name
         self.pro_name = pro_name
         self.custom_name = custom_name
+        self.match_count = match_count
         self.smurf = smurf
+        self.smurf_stratz = smurf_stratz
         self.is_racist = is_racist
         self.is_sexist = is_sexist
         self.is_toxic = is_toxic
@@ -123,7 +72,9 @@ class PlayerEntity(BaseEntity):
             player_state.name,
             player_state.pro_name if player_state.pro_name != "" else None,
             player_state.custom_name,
+            player_state.match_count,
             player_state.smurf,
+            player_state.smurf_stratz,
             player_state.is_racist,
             player_state.is_sexist,
             player_state.is_toxic,
@@ -141,7 +92,9 @@ class PlayerEntity(BaseEntity):
         """
         to_object.pro_name = from_object.pro_name
         to_object.custom_name = from_object.custom_name
+        to_object.match_count = from_object.match_count
         to_object.smurf = from_object.smurf
+        to_object.smurf_stratz = from_object.smurf_stratz
         to_object.is_racist = from_object.is_racist
         to_object.is_sexist = from_object.is_sexist
         to_object.is_toxic = from_object.is_toxic

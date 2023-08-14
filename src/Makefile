@@ -54,13 +54,13 @@ unix-clean:
 
 # Generate UI from Qt Designer files
 unix-gen-ui:
-	./.venv/Scripts/pyside6-uic ./d2notes/ui/ui_main_window.ui -o ./d2notes/ui/ui_main_window.py --absolute-imports -python-paths .
+	./.venv/bin/pyside6-uic ./d2notes/ui/ui_main_window.ui -o ./d2notes/ui/ui_main_window.py --absolute-imports -python-paths .
 
 # Generate embedded resources from Qt resource file
 unix-gen-resources:
-	./.venv/Scripts/pyside6-rcc ./d2notes/ui/resources.qrc -o ./d2notes/ui/resources_rc.py
+	./.venv/bin/pyside6-rcc ./d2notes/ui/resources.qrc -o ./d2notes/ui/resources_rc.py
 
 ## Generate a production build
 unix-build:
-	./.venv/Script/pyinstaller --noconfirm ./DotaNotes.spec
+	./.venv/bin/pyinstaller --noconfirm ./DotaNotes.spec
 

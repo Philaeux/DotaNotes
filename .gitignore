@@ -3,7 +3,7 @@ __pycache__
 
 src/.wvenv/
 src/.venv/
-src/dota_notes/data/sqlite.db
+src/dota_notes/data/models/sqlite.db
 
 src/build
 src/dist
