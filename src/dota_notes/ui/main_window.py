@@ -77,6 +77,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 ISO_3166_COUNTRIES.get(player_data.country_code, ""))
             getattr(self, f"labelPlayer{player_slot}Country").setPixmap(
                 QPixmap(f":/images/flags/{player_data.country_code.lower()}.svg"))
+        if player_data.medal is None:
+            getattr(self, f"labelPlayer{player_slot}Medal").setPixmap(QPixmap())
+        else:
+            getattr(self, f"labelPlayer{player_slot}Medal").setPixmap(QPixmap(f":/images/ranks/{player_data.medal}.png"))
+
         getattr(self, f"labelPlayer{player_slot}ProName").setText(
             player_data.pro_name if player_data.pro_name is not None else "")
         getattr(self, f"labelPlayer{player_slot}GameCount").setText(

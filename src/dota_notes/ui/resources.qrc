@@ -1,5 +1,49 @@
 <RCC>
   <qresource>
+    <file>images/ranks/10.png</file>
+    <file>images/ranks/20.png</file>
+    <file>images/ranks/30.png</file>
+    <file>images/ranks/40.png</file>
+    <file>images/ranks/50.png</file>
+    <file>images/ranks/60.png</file>
+    <file>images/ranks/70.png</file>
+    <file>images/ranks/0.png</file>
+    <file>images/ranks/11.png</file>
+    <file>images/ranks/12.png</file>
+    <file>images/ranks/13.png</file>
+    <file>images/ranks/14.png</file>
+    <file>images/ranks/15.png</file>
+    <file>images/ranks/21.png</file>
+    <file>images/ranks/22.png</file>
+    <file>images/ranks/23.png</file>
+    <file>images/ranks/24.png</file>
+    <file>images/ranks/25.png</file>
+    <file>images/ranks/31.png</file>
+    <file>images/ranks/32.png</file>
+    <file>images/ranks/33.png</file>
+    <file>images/ranks/34.png</file>
+    <file>images/ranks/35.png</file>
+    <file>images/ranks/41.png</file>
+    <file>images/ranks/42.png</file>
+    <file>images/ranks/43.png</file>
+    <file>images/ranks/44.png</file>
+    <file>images/ranks/45.png</file>
+    <file>images/ranks/51.png</file>
+    <file>images/ranks/52.png</file>
+    <file>images/ranks/54.png</file>
+    <file>images/ranks/53.png</file>
+    <file>images/ranks/55.png</file>
+    <file>images/ranks/61.png</file>
+    <file>images/ranks/62.png</file>
+    <file>images/ranks/63.png</file>
+    <file>images/ranks/64.png</file>
+    <file>images/ranks/65.png</file>
+    <file>images/ranks/71.png</file>
+    <file>images/ranks/72.png</file>
+    <file>images/ranks/73.png</file>
+    <file>images/ranks/74.png</file>
+    <file>images/ranks/75.png</file>
+    <file>images/ranks/80.png</file>
     <file>images/api.svg</file>
     <file>images/description.svg</file>
     <file>images/flags/ac.svg</file>

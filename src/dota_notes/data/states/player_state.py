@@ -6,6 +6,7 @@ class PlayerState(QObject):
     steam_id = 0
     avatar = ""
     account_level = None
+    medal = None
     country_code = ""
     name = ""
     pro_name = None
@@ -21,10 +22,9 @@ class PlayerState(QObject):
     destroys_items = False
     note = ""
 
-    ATTRIBUTES_FOR_COPY = ["steam_id", "avatar", "account_level", "country_code",
+    ATTRIBUTES_FOR_COPY = ["steam_id", "avatar", "account_level", "medal", "country_code",
                            "pro_name", "custom_name", "match_count", "smurf", "smurf_stratz",
-                           "is_racist",
-                           "is_sexist", "is_toxic", "is_feeder", "gives_up", "destroys_items", "note"]
+                           "is_racist", "is_sexist", "is_toxic", "is_feeder", "gives_up", "destroys_items", "note"]
 
     def copy_from(self, from_object):
         """Copy attributes from another object into this
@@ -55,6 +55,8 @@ class PlayerState(QObject):
             self.name = account["name"]
         else:
             self.name = "< HIDDEN ACCOUNT >"
+        if "isAnonymous" in account and isinstance(account["isAnonymous"], bool) and account["isAnonymous"]:
+            self.medal = 0
 
         if "proSteamAccount" in account and account["proSteamAccount"] is not None:
             pro_steam_account = account["proSteamAccount"]

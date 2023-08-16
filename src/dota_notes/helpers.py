@@ -22,6 +22,7 @@ def get_steam_live_game_stats(api_key, server_id):
         print(f"Error occurred while fetching data: {e}")
         return None
 
+
 def exec_stratz_graphql_query(token: str, query: str):
     """Execute a graphql query on stratz endpoint.
 
@@ -62,9 +63,13 @@ def stratz_get_players_info(token: str, players: list[int]):
     full_query = f"""fragment playerProfile on PlayerType {{
                        steamAccountId
                        matchCount
+                       performance {{
+                         rank
+                       }}
                        steamAccount {{
                          avatar
                          name
+                         isAnonymous
                          dotaAccountLevel
                          smurfFlag
                          countryCode
@@ -147,6 +152,7 @@ def stratz_get_live_game(token: str, match_id: int):
                           }}
                           countryCode
                           name
+                          isAnonymous
                         }}
                       }}
                     }}

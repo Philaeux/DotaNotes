@@ -24,7 +24,7 @@
     <item>
      <widget class="QStackedWidget" name="centralStackedWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page0">
        <widget class="QWidget" name="horizontalWidget_2" native="true">
@@ -525,13 +525,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="4" column="2">
-                <widget class="Line" name="line_9">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                </widget>
-               </item>
                <item row="4" column="6">
                 <widget class="Line" name="line_18">
                  <property name="orientation">
@@ -539,29 +532,8 @@
                  </property>
                 </widget>
                </item>
-               <item row="6" column="2">
-                <widget class="Line" name="line_16">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                </widget>
-               </item>
                <item row="3" column="6">
                 <widget class="Line" name="line_12">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="2">
-                <widget class="Line" name="line_2">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="2">
-                <widget class="Line" name="line_27">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
                  </property>
@@ -576,20 +548,6 @@
                </item>
                <item row="3" column="8">
                 <widget class="Line" name="line_22">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="2">
-                <widget class="Line" name="line_26">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="10" column="2">
-                <widget class="Line" name="line_28">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
                  </property>
@@ -920,9 +878,11 @@ font: 57 10pt &quot;Roboto Medium&quot;;</string>
                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Stratz smurf&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">border-image: url(:/images/smurf.png);
+                     <string notr="true">QPushButton {
+border-image: url(:/images/smurf.png);
 color: rgb(255, 0, 0);
-font: 20pt &quot;Arial&quot;;</string>
+font: 20pt &quot;Arial&quot;;
+}</string>
                     </property>
                     <property name="text">
                      <string>1</string>
@@ -969,9 +929,11 @@ font: 20pt &quot;Arial&quot;;</string>
                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Stratz smurf&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">border-image: url(:/images/smurf.png);
+                     <string notr="true">QPushButton {
+border-image: url(:/images/smurf.png);
 color: rgb(255, 0, 0);
-font: 20pt &quot;Arial&quot;;</string>
+font: 20pt &quot;Arial&quot;;
+}</string>
                     </property>
                     <property name="text">
                      <string>1</string>
@@ -1018,9 +980,11 @@ font: 20pt &quot;Arial&quot;;</string>
                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Stratz smurf&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">border-image: url(:/images/smurf.png);
+                     <string notr="true">QPushButton {
+border-image: url(:/images/smurf.png);
 color: rgb(255, 0, 0);
-font: 20pt &quot;Arial&quot;;</string>
+font: 20pt &quot;Arial&quot;;
+}</string>
                     </property>
                     <property name="text">
                      <string>1</string>
@@ -1067,9 +1031,11 @@ font: 20pt &quot;Arial&quot;;</string>
                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Stratz smurf&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">border-image: url(:/images/smurf.png);
+                     <string notr="true">QPushButton {
+border-image: url(:/images/smurf.png);
 color: rgb(255, 0, 0);
-font: 20pt &quot;Arial&quot;;</string>
+font: 20pt &quot;Arial&quot;;
+}</string>
                     </property>
                     <property name="text">
                      <string>1</string>
@@ -1116,9 +1082,11 @@ font: 20pt &quot;Arial&quot;;</string>
                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Stratz smurf&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">border-image: url(:/images/smurf.png);
+                     <string notr="true">QPushButton {
+border-image: url(:/images/smurf.png);
 color: rgb(255, 0, 0);
-font: 20pt &quot;Arial&quot;;</string>
+font: 20pt &quot;Arial&quot;;
+}</string>
                     </property>
                     <property name="text">
                      <string>1</string>
@@ -1289,9 +1257,11 @@ font: 20pt &quot;Arial&quot;;</string>
                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Stratz smurf&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">border-image: url(:/images/smurf.png);
+                     <string notr="true">QPushButton {
+border-image: url(:/images/smurf.png);
 color: rgb(255, 0, 0);
-font: 20pt &quot;Arial&quot;;</string>
+font: 20pt &quot;Arial&quot;;
+}</string>
                     </property>
                     <property name="text">
                      <string>1</string>
@@ -1338,9 +1308,11 @@ font: 20pt &quot;Arial&quot;;</string>
                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Stratz smurf&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">border-image: url(:/images/smurf.png);
+                     <string notr="true">QPushButton {
+border-image: url(:/images/smurf.png);
 color: rgb(255, 0, 0);
-font: 20pt &quot;Arial&quot;;</string>
+font: 20pt &quot;Arial&quot;;
+}</string>
                     </property>
                     <property name="text">
                      <string>1</string>
@@ -1511,9 +1483,11 @@ font: 20pt &quot;Arial&quot;;</string>
                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Stratz smurf&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">border-image: url(:/images/smurf.png);
+                     <string notr="true">QPushButton {
+border-image: url(:/images/smurf.png);
 color: rgb(255, 0, 0);
-font: 20pt &quot;Arial&quot;;</string>
+font: 20pt &quot;Arial&quot;;
+}</string>
                     </property>
                     <property name="text">
                      <string>1</string>
@@ -2056,9 +2030,10 @@ font: 20pt &quot;Arial&quot;;</string>
                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Stratz smurf&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">border-image: url(:/images/smurf.png);
+                     <string notr="true">QPushButton {
+border-image: url(:/images/smurf.png);
 color: rgb(255, 0, 0);
-font: 20pt &quot;Arial&quot;;</string>
+font: 20pt &quot;Arial&quot;;}</string>
                     </property>
                     <property name="text">
                      <string>1</string>
@@ -2486,9 +2461,11 @@ font: 20pt &quot;Arial&quot;;</string>
                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Stratz smurf&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true">border-image: url(:/images/smurf.png);
+                     <string notr="true">QPushButton {
+border-image: url(:/images/smurf.png);
 color: rgb(255, 0, 0);
-font: 20pt &quot;Arial&quot;;</string>
+font: 20pt &quot;Arial&quot;;
+}</string>
                     </property>
                     <property name="text">
                      <string>1</string>
@@ -2653,22 +2630,8 @@ font: 20pt &quot;Arial&quot;;</string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="2">
-                <widget class="Line" name="line_14">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                </widget>
-               </item>
                <item row="11" column="6">
                 <widget class="Line" name="line_39">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="3" column="2">
-                <widget class="Line" name="line_3">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
                  </property>
@@ -2681,22 +2644,8 @@ font: 20pt &quot;Arial&quot;;</string>
                  </property>
                 </widget>
                </item>
-               <item row="11" column="2">
-                <widget class="Line" name="line_29">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                </widget>
-               </item>
                <item row="9" column="6">
                 <widget class="Line" name="line_37">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="12" column="2">
-                <widget class="Line" name="line_30">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
                  </property>
@@ -3995,6 +3944,320 @@ font: 57 10pt &quot;Roboto Medium&quot;;</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_19">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="pixmap">
+                  <pixmap resource="resources.qrc">:/images/ranks/0.png</pixmap>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="2">
+                <widget class="QLabel" name="labelPlayer0Medal">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="2">
+                <widget class="QLabel" name="labelPlayer1Medal">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="2">
+                <widget class="QLabel" name="labelPlayer2Medal">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="5" column="2">
+                <widget class="QLabel" name="labelPlayer3Medal">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="2">
+                <widget class="QLabel" name="labelPlayer4Medal">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="2">
+                <widget class="QLabel" name="labelPlayer5Medal">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="2">
+                <widget class="QLabel" name="labelPlayer6Medal">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="2">
+                <widget class="QLabel" name="labelPlayer7Medal">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="11" column="2">
+                <widget class="QLabel" name="labelPlayer8Medal">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="12" column="2">
+                <widget class="QLabel" name="labelPlayer9Medal">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>

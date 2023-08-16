@@ -157,6 +157,12 @@ class GameState(QObject):
             if f"p{player.steam_id}" in json["data"]:
                 extra_info = json["data"][f"p{player.steam_id}"]
 
+                if ("performance" in extra_info and extra_info["performance"] is not None
+                        and "rank" in extra_info["performance"] and extra_info["performance"]["rank"] is not None
+                        and isinstance(extra_info["performance"]["rank"], int)):
+                    player.medal = extra_info["performance"]["rank"]
+                else:
+                    player.medal = 0
                 if "matchCount" in extra_info and extra_info["matchCount"] is not None:
                     player.match_count = extra_info["matchCount"]
                 if "steamAccount" in extra_info and extra_info["steamAccount"] is not None:

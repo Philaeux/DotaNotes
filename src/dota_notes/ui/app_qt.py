@@ -18,7 +18,15 @@ from dota_notes.ui.main_window import MainWindow
 
 
 class QtApp:
-    """Qt application process"""
+    """Qt application process
+
+    Attributes
+        dota_notes: link to the main object of the application
+        app: QT app
+        window: QT Main window of the application
+        last_selected_index: index of the last selected player
+        last_selected_player: data of the last selected player
+    """
 
     def __init__(self, dota_notes):
         self.dota_notes = dota_notes
@@ -26,8 +34,8 @@ class QtApp:
         # Build Qt app components
         self.app = QApplication(sys.argv)
         self.window = MainWindow()
-        self.lastSelectedIndex = 0
-        self.lastSelectedState = None
+        self.last_selected_index = 0
+        self.last_selected_player = None
 
         # Connect actions
         self.window.actionSettings.triggered.connect(self.on_open_settings)
@@ -60,6 +68,7 @@ class QtApp:
         self.window.show()
 
     def run(self):
+        """Start the QT application, enter the event loop and add a periodic dequeue of messages"""
         timer = QTimer()
         timer.timeout.connect(self.process_queues)
         timer.start(100)
@@ -68,6 +77,7 @@ class QtApp:
         return return_code
 
     def process_queues(self):
+        """Periodic process that checks message queues and process necessary jobs"""
         while not self.dota_notes.message_queue_qt.empty():
             message = self.dota_notes.message_queue_qt.get(block=False)
             if isinstance(message, MessageGSI):
@@ -90,6 +100,7 @@ class QtApp:
                     self.window.draw_status_message("No game found for player " + self.window.inputSteamId.text())
 
     def on_open_settings(self):
+        """User opens the settings panel"""
         settings = self.dota_notes.settings
         self.window.comboBoxSettingsMode.setCurrentText(settings.software_mode)
         self.window.lineEditStratzToken.setText(settings.stratz_token)
@@ -99,6 +110,7 @@ class QtApp:
         self.window.centralStackedWidget.setCurrentIndex(1)
 
     def on_settings_save(self):
+        """User saves settings modifications"""
         settings = self.dota_notes.settings
         settings.software_mode = self.window.comboBoxSettingsMode.currentText()
         settings.stratz_token = self.window.lineEditStratzToken.text()
@@ -111,18 +123,22 @@ class QtApp:
         self.window.centralStackedWidget.setCurrentIndex(0)
 
     def on_settings_cancel(self):
+        """User cancels settings modifications"""
         self.window.centralStackedWidget.setCurrentIndex(0)
 
     def on_connect_client(self):
+        """User clicks on connect button"""
         self.window.buttonConnect.setVisible(False)
         message = MessageConnect(self.dota_notes.settings.steam_user, self.dota_notes.settings.steam_password)
         self.dota_notes.message_queue_dota.put(message)
 
     def on_disconnect_client(self):
+        """User clicks on disconnect button"""
         message = MessageDisconnect()
         self.dota_notes.message_queue_dota.put(message)
 
     def on_label_click(self, label_name, label_text):
+        """User clicks on a specific label"""
         row = 0
         for char in label_name:
             if char.isdigit():
@@ -130,11 +146,13 @@ class QtApp:
         self.on_select_player(row)
 
     def on_select_player(self, player_slot):
-        self.lastSelectedIndex = player_slot
-        self.lastSelectedState = self.dota_notes.state.players[player_slot]
-        self.window.draw_details_with_player(self.lastSelectedState)
+        """User select a player to have info off"""
+        self.last_selected_index = player_slot
+        self.last_selected_player = self.dota_notes.state.players[player_slot]
+        self.window.draw_details_with_player(self.last_selected_player)
 
     def on_steam_live(self):
+        """Look for a live game a player is in"""
         steam_id = self.window.inputSteamId.text()
         if self.is_valid_search(steam_id):
             steam_id = SteamID(steam_id)
@@ -204,13 +222,14 @@ class QtApp:
         if json is not None:
             self.dota_notes.state.enrich_players_with_stratz_info(json)
             self.window.draw_match_with_state(self.dota_notes.state)
-            self.on_select_player(self.lastSelectedIndex)
+            self.on_select_player(self.last_selected_index)
             self.window.draw_status_message("Updated player with Stratz info.")
         else:
             self.window.draw_status_message("Error while fetching player info from Stratz.")
 
     def on_save_player_details(self):
-        player_state = self.lastSelectedState
+        """User press 'save' on the player detail page"""
+        player_state = self.last_selected_player
         player_state.custom_name = self.window.inputDetailsCustomName.text()
         player_state.smurf = self.window.comboBoxDetailsSmurf.currentText()
         player_state.is_racist = self.window.checkBoxDetailsRacist.isChecked()
@@ -220,7 +239,7 @@ class QtApp:
         player_state.gives_up = self.window.checkBoxDetailsGivesUp.isChecked()
         player_state.destroys_items = self.window.checkBoxDetailsDestroysItems.isChecked()
         player_state.note = self.window.inputDetailsNote.toPlainText()
-        self.window.draw_match_player(self.lastSelectedIndex, player_state)
+        self.window.draw_match_player(self.last_selected_index, player_state)
         with Session(self.dota_notes.database.engine) as session:
             player_info = session.get(PlayerEntity, str(player_state.steam_id))
             if player_info is None:
