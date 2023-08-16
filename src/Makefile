@@ -30,7 +30,7 @@ win-gen-resources:
 ## Generate a production build
 win-build:
 	.\.wvenv\Scripts\pyinstaller.exe --noconfirm .\DotaNotes.spec
-	md -Force .\bundle
+	md .\bundle
 	Compress-Archive -Force -Path "./dist/DotaNotes/" -DestinationPath "bundle/DotaNotes.zip"
 
 #######################################
