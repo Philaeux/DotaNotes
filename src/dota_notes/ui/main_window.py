@@ -12,7 +12,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     SMURF_CHOICES = ["", "Account Buyer", "Booster", "Main", "Maybe", "Smurf", "Sweaty Smurf"]
     FLAGS = ["Racist", "Sexist", "Toxic", "Feeder", "GivesUp", "Destroyer"]
-    MODE_CHOICES = ["Client", "Proxy"]
+    MODE_CHOICES = ["Client"]
 
     def __init__(self):
         super().__init__()
@@ -23,6 +23,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         for smurf_choice in self.SMURF_CHOICES:
             self.comboBoxDetailsSmurf.addItem(smurf_choice)
+        for mode_choice in self.MODE_CHOICES:
+            self.comboBoxSettingsMode.addItem(mode_choice)
+        self.draw_connection_status("Off", "Off")
 
         for i in range(10):
             for flag in self.FLAGS:
@@ -34,10 +37,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         """Draw a bottom status message with a date in front"""
         self.statusBar().showMessage(datetime.now().strftime("%H:%M:%S - ") + message, timeout)
 
+    def draw_connection_status(self, steam: str, dota: str):
+        """Display the correct label corresponding to the connection status"""
+        possible_status = ["On", "Try", "Off"]
+        for client in ["Steam", "Dota"]:
+            for status in possible_status:
+                getattr(self, f"label{client}Con{status}").setVisible(False)
+        if steam not in possible_status or dota not in possible_status:
+            return
+        getattr(self, f"labelSteamCon{steam}").setVisible(True)
+        getattr(self, f"labelDotaCon{dota}").setVisible(True)
+
+        if steam == "Off" and dota == "Off":
+            self.buttonConnect.setVisible(True)
+        else:
+            self.buttonConnect.setVisible(False)
+
     def draw_match_with_state(self, data):
         """Draw a match info in the main widget"""
-        self.labelGSIMatchId.setText(str(data.last_gsi_match_id))
         self.labelMatchId.setText(str(data.match_id))
+        self.labelServerId.setText(str(data.server_id))
         for index, player in enumerate(data.players):
             if index > 9:
                 break

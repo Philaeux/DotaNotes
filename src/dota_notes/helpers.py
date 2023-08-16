@@ -3,6 +3,25 @@ from requests.adapters import HTTPAdapter
 from urllib3 import Retry
 
 
+def get_steam_live_game_stats(api_key, server_id):
+    """Fetch game live information using the Steam WEB API and knowing the server the game is played on.
+    Args:
+        api_key: str Steam WEB API key
+        server_id: int Server ID where the match is played
+    """
+    try:
+        s = requests.Session()
+        retries = Retry(total=8, backoff_jitter=1, status_forcelist=[400])
+        s.mount("https://", HTTPAdapter(max_retries=retries))
+        url = f"https://api.steampowered.com/IDOTA2MatchStats_570/GetRealtimeStats/v1/?key={api_key}&server_steam_id={str(server_id)}"
+        response = s.get(url)
+        response.raise_for_status()
+
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error occurred while fetching data: {e}")
+        return None
+
 def exec_stratz_graphql_query(token: str, query: str):
     """Execute a graphql query on stratz endpoint.
 
@@ -109,6 +128,7 @@ def stratz_get_live_game(token: str, match_id: int):
     Returns
         json of the http response or None if error
     """
+    print(match_id)
     if match_id == 0:
         return None
     query = f"""{{
@@ -132,7 +152,13 @@ def stratz_get_live_game(token: str, match_id: int):
                     }}
                   }}
                 }}"""
-    return exec_stratz_graphql_query(token, query)
+    json = exec_stratz_graphql_query(token, query)
+    if ("data" not in json
+            or "live" not in json["data"]
+            or "match" not in json["data"]["live"]
+            or json["data"]["live"]["match"] is None):
+        return None
+    return json
 
 
 ISO_3166_COUNTRIES = {

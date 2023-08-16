@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
+    <file>images/api.svg</file>
     <file>images/description.svg</file>
     <file>images/flags/ac.svg</file>
     <file>images/flags/ad.svg</file>

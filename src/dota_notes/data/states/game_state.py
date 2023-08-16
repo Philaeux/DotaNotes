@@ -1,6 +1,5 @@
 from PySide6.QtCore import QObject
 
-from dota_notes.data.messages import MessageGSI
 from dota_notes.data.models.player_entity import PlayerEntity
 from dota_notes.data.states.player_state import PlayerState
 
@@ -12,8 +11,8 @@ class GameState(QObject):
         match_id: unique identifier of a match
         players: list of all the player in the game
     """
-    last_gsi_match_id = 0
     match_id = 0
+    server_id = 0
     players = []
 
     def __init__(self):
@@ -58,18 +57,38 @@ class GameState(QObject):
             if player.steam_id in old_player_state:
                 player.copy_from(old_player_state[player.steam_id])
 
-    def update_with_live_game(self, json):
+    def update_with_steam_live_game(self, json):
+        """Update with information of a live game (Steam Web API)
+        Args:
+            json: Web API return info
+        """
+        if "match" in json:
+            if "server_steam_id" in json["match"]:
+                self.server_id = int(json["match"]["server_steam_id"])
+            if "match_id" in json["match"]:
+                self.match_id = int(json["match"]["match_id"])
+
+        old_player_state = self.fresh_players()
+        if "teams" in json and isinstance(json["teams"], list):
+            for team in json["teams"]:
+                if "players" in team and isinstance(team["players"], list):
+                    for player in team["players"]:
+                        if "playerid" in player:
+                            if "accountid" in player:
+                                self.players[player["playerid"]].steam_id = player["accountid"]
+                            if "name" in player:
+                                self.players[player["playerid"]].name = player["name"]
+        self.enrich_players_with_old_player_state(old_player_state)
+
+    def update_with_stratz_live_game(self, json):
         """Update with information of a live game (Steam Web API)
 
         Args:
             json: Web API return info
         """
         self.match_id = 0
+        self.server_id = 0
         old_player_state = self.fresh_players()
-        if ("data" not in json
-                or "live" not in json["data"]
-                or "match" not in json["data"]["live"]):
-            return
 
         match_json = json["data"]["live"]["match"]
         if "matchId" in match_json and match_json["matchId"] is not None:
@@ -83,13 +102,27 @@ class GameState(QObject):
                 self.players[index].enrich_with_stratz_account_info(account)
         self.enrich_players_with_old_player_state(old_player_state)
 
-    def update_with_last_game(self, json):
+    def update_with_gsi(self, message):
+        """Update the state with information received by GSI"""
+
+        self.match_id = message.match_id
+        self.server_id = 0
+        old_player_state = self.fresh_players()
+
+        for index, player in enumerate(message.players):
+            self.players[index].steam_id = player.steam_id
+            self.players[index].name = player.name
+
+        self.enrich_players_with_old_player_state(old_player_state)
+
+    def update_with_stratz_last_game(self, json):
         """Use the Stratz last game information to populate the state.
 
         Args:
             json: Data from OpenDota API
         """
         self.match_id = 0
+        self.server_id = 0
         old_player_state = self.fresh_players()
 
         if ("data" not in json

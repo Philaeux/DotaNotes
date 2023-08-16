@@ -7,14 +7,21 @@ class Settings(object):
     Attributes:
         _instance: Singleton instance
         gsi_port: Port used by the http server awaiting request from GSI
-        stratz_token: ...
+        stratz_token: stratz auth bearer token
+        steam_user: Steam username for the dota client
+        steam_password: Steam password for the dota client
+        steam_api_key: Steam WEB API key for the Steam WEB API
     """
 
     _instance = None
     gsi_port: int = 58765
+    software_mode: str = "Client"
     stratz_token: str = ""
+    steam_user: str = ""
+    steam_password: str = ""
+    steam_api_key: str = ""
 
-    TO_IMPORT_EXPORT = ["gsi_port", "stratz_token"]
+    TO_IMPORT_EXPORT = ["gsi_port", "software_mode", "stratz_token", "steam_user", "steam_password", "steam_api_key"]
 
     def __new__(cls, *args, **kwargs):
         """New overload to create a singleton."""

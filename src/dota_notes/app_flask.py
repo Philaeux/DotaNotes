@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 
-from dota_notes.data.messages import MessageGSI
+from dota_notes.data.messages.message_gsi import MessageGSI, MessageGSIPlayer
 
 
 def flask_process(port, message_queue_qt):
@@ -30,6 +30,12 @@ class FlaskApp:
                 if self.last_match_id_sent == info.match_id or info.match_id == 0:
                     return jsonify({})
 
+                if "team2" in payload["player"]:
+                    for team in payload["player"].values():
+                        for player in team.values():
+                            if "accountid" not in player or "name" not in player:
+                                continue
+                            info.players.append(MessageGSIPlayer(int(player["accountid"]), player["name"]))
                 self.last_match_id_sent = info.match_id
                 self.message_queue_qt.put(info)
             return jsonify({})
