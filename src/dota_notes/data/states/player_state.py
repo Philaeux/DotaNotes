@@ -20,11 +20,13 @@ class PlayerState(QObject):
     is_feeder = False
     gives_up = False
     destroys_items = False
+    rages_buyback = False
     note = ""
 
     ATTRIBUTES_FOR_COPY = ["steam_id", "avatar", "account_level", "medal", "country_code",
                            "pro_name", "custom_name", "match_count", "smurf", "smurf_stratz",
-                           "is_racist", "is_sexist", "is_toxic", "is_feeder", "gives_up", "destroys_items", "note"]
+                           "is_racist", "is_sexist", "is_toxic", "is_feeder", "gives_up", "destroys_items",
+                           "rages_buyback", "note"]
 
     def copy_from(self, from_object):
         """Copy attributes from another object into this

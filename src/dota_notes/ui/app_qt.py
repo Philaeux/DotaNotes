@@ -238,6 +238,7 @@ class QtApp:
         player_state.is_feeder = self.window.checkBoxDetailsFeeder.isChecked()
         player_state.gives_up = self.window.checkBoxDetailsGivesUp.isChecked()
         player_state.destroys_items = self.window.checkBoxDetailsDestroysItems.isChecked()
+        player_state.rages_buyback = self.window.checkBoxDetailsBuyback.isChecked()
         player_state.note = self.window.inputDetailsNote.toPlainText()
         self.window.draw_match_player(self.last_selected_index, player_state)
         with Session(self.dota_notes.database.engine) as session:

@@ -8,7 +8,10 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[
+        ("dota_notes/alembic/env.py", "alembic"),
+        ("dota_notes/alembic/versions/*", "alembic/versions"),
+        ("alembic.ini", ".")],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

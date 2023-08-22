@@ -14,10 +14,13 @@ win-run: win-gen-ui win-gen-resources
 	.\.wvenv\Scripts\python.exe .\main.py
 
 ## Remove development environment
-win-clean:
+win-clean: win-build-clean
 	rm -r .\.wvenv\
-	rm -r .\build
-	rm -r .\dist
+
+win-build-clean:
+	rm -r .\build\
+	rm -r .\dist\
+	rm -r .\bundle\
 
 # Generate UI from Qt Designer files
 win-gen-ui:
@@ -26,6 +29,10 @@ win-gen-ui:
 # Generate embedded resources from Qt resource file
 win-gen-resources:
 	.\.wvenv\Scripts\pyside6-rcc.exe ./dota_notes/ui/resources.qrc -o ./dota_notes/ui/resources_rc.py
+
+# Generate database migrations
+win-gen-migrations:
+	.\.wvenv\Scripts\alembic.exe revision --autogenerate
 
 ## Generate a production build
 win-build:
@@ -49,8 +56,13 @@ unix-run: unix-gen-ui unix-gen-resources
 	.venv/bin/python3 ./main.py
 
 ## Remove development environment
-unix-clean:
-	rm -rf .venv
+unix-clean: unix-build-clean
+	rm -r ./.venv/
+
+unix-build-clean:
+	rm -r ./build
+	rm -r ./dist
+	rm -r ./bundle
 
 # Generate UI from Qt Designer files
 unix-gen-ui:
@@ -60,7 +72,10 @@ unix-gen-ui:
 unix-gen-resources:
 	./.venv/bin/pyside6-rcc ./d2notes/ui/resources.qrc -o ./d2notes/ui/resources_rc.py
 
+# Generate database migrations
+unix-gen-migrations:
+	./.venv/bin/alembic revision --autogenerate
+
 ## Generate a production build
 unix-build:
 	./.venv/bin/pyinstaller --noconfirm ./DotaNotes.spec
-

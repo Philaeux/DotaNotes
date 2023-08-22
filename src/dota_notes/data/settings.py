@@ -55,7 +55,6 @@ class Settings(object):
         for at in self.TO_IMPORT_EXPORT:
             row = session.get(SettingEntity, at)
             if row is not None:
-                at_type = type(getattr(self, at))
-                row.value = at_type(getattr(self, at))
+                row.value = str(getattr(self, at))
             else:
                 session.add(SettingEntity(at, str(getattr(self, at))))
