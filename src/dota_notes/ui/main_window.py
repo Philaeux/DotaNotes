@@ -11,7 +11,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     """Application main window that is seeded with the generated class from .ui file"""
 
     SMURF_CHOICES = ["", "Account Buyer", "Booster", "Main", "Maybe", "Smurf", "Sweaty Smurf"]
-    FLAGS = ["Racist", "Sexist", "Toxic", "Feeder", "GivesUp", "Destroyer",  "Buyback"]
+    FLAGS = ["Racist", "Sexist", "Toxic", "Feeder", "GivesUp", "Destroyer",  "Buyback", "BMPause", "ResumesPause"]
     MODE_CHOICES = ["Client"]
 
     def __init__(self):
@@ -100,6 +100,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         getattr(self, f"labelPlayer{player_slot}FlagGivesUp").setVisible(player_data.gives_up)
         getattr(self, f"labelPlayer{player_slot}FlagDestroyer").setVisible(player_data.destroys_items)
         getattr(self, f"labelPlayer{player_slot}FlagBuyback").setVisible(player_data.rages_buyback)
+        getattr(self, f"labelPlayer{player_slot}FlagBMPause").setVisible(player_data.bm_pause)
+        getattr(self, f"labelPlayer{player_slot}FlagResumesPause").setVisible(player_data.resumes_pause)
         getattr(self, f"labelPlayer{player_slot}Note").setVisible(len(player_data.note) > 0)
 
     def draw_details_with_player(self, player_state):
@@ -124,4 +126,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.checkBoxDetailsGivesUp.setChecked(player_state.gives_up)
         self.checkBoxDetailsDestroysItems.setChecked(player_state.destroys_items)
         self.checkBoxDetailsBuyback.setChecked(player_state.rages_buyback)
+        self.checkBoxDetailsPauseWar.setChecked(player_state.bm_pause)
+        self.checkBoxDetailsResumesPause.setChecked(player_state.resumes_pause)
         self.inputDetailsNote.setPlainText(player_state.note)

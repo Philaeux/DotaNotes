@@ -23,6 +23,9 @@ class PlayerEntity(BaseEntity):
         is_feeder: flag
         gives_up: flag
         destroys_items: flag
+        rages_buyback: flag
+        bm_pause: flag
+        resumes_pause: flag
         note: user set note
     """
     __tablename__ = 'players'
@@ -40,11 +43,14 @@ class PlayerEntity(BaseEntity):
     is_feeder: Mapped[bool] = mapped_column()
     gives_up: Mapped[bool] = mapped_column()
     destroys_items: Mapped[bool] = mapped_column()
+    rages_buyback: Mapped[bool] = mapped_column()
+    bm_pause: Mapped[bool] = mapped_column()
+    resumes_pause: Mapped[bool] = mapped_column()
     note: Mapped[str] = mapped_column(String(500))
 
     def __init__(self, steam_id, name, pro_name=None, custom_name="", match_count=None, smurf="", smurf_stratz=None,
                  is_racist=False, is_sexist=False, is_toxic=False, is_feeder=False, gives_up=False,
-                 destroys_items=False, note=""):
+                 destroys_items=False, rages_buyback=False, bm_pause=False, resumes_pause=False, note=""):
         self.steam_id = steam_id
         self.name = name
         self.pro_name = pro_name
@@ -58,6 +64,9 @@ class PlayerEntity(BaseEntity):
         self.is_feeder = is_feeder
         self.gives_up = gives_up
         self.destroys_items = destroys_items
+        self.rages_buyback = rages_buyback
+        self.bm_pause = bm_pause
+        self.resumes_pause = resumes_pause
         self.note = note
 
     @staticmethod
@@ -67,20 +76,9 @@ class PlayerEntity(BaseEntity):
         Args:
             player_state: state to import information from
         """
-        return PlayerEntity(
-            str(player_state.steam_id),
-            player_state.name,
-            player_state.pro_name if player_state.pro_name != "" else None,
-            player_state.custom_name,
-            player_state.match_count,
-            player_state.smurf,
-            player_state.smurf_stratz,
-            player_state.is_racist,
-            player_state.is_sexist,
-            player_state.is_toxic,
-            player_state.is_feeder,
-            player_state.gives_up,
-            player_state.destroys_items)
+        entity = PlayerEntity(str(player_state.steam_id), player_state.name)
+        PlayerEntity.import_export(from_object=player_state, to_object=entity)
+        return entity
 
     @staticmethod
     def import_export(from_object, to_object):
@@ -101,6 +99,9 @@ class PlayerEntity(BaseEntity):
         to_object.is_feeder = from_object.is_feeder
         to_object.gives_up = from_object.gives_up
         to_object.destroys_items = from_object.destroys_items
+        to_object.rages_buyback = from_object.rages_buyback
+        to_object.bm_pause = from_object.bm_pause
+        to_object.resumes_pause = from_object.resumes_pause
         to_object.note = from_object.note
 
     def __repr__(self) -> str:

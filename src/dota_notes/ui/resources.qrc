@@ -1,5 +1,6 @@
 <RCC>
   <qresource>
+    <file>images/resumes_pause.png</file>
     <file>images/evil_pause.png</file>
     <file>images/rage_buyback.png</file>
     <file>images/ranks/10.png</file>
